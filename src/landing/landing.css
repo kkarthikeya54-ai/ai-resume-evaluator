@@ -1,0 +1,1071 @@
+/* ================================================================
+   RANKORA — cinematic design system
+   Palette: Warm Ivory / Pine Ink / Celadon Sage / Soft Graphite / Coral
+   ================================================================ */
+
+/* Scoped design system — tokens and resets live on .rankora-root so the
+   rest of the app (dashboards, login, modals) is never affected. */
+.rankora-root {
+  position: relative;
+  --ivory: #F7FAFF;
+  --pine: #0B1F3A;
+  --pine-deep: #060F1F;
+  --sage: #5B8DEF;
+  --graphite: #2E2E2E;
+  --coral: #1D6FF2;
+  --coral-soft: rgba(29, 111, 242, 0.14);
+  --sage-soft: rgba(91, 141, 239, 0.12);
+  --glass: rgba(247, 250, 255, 0.045);
+  --glass-strong: rgba(13, 34, 66, 0.72);
+  --hairline: rgba(247, 250, 255, 0.09);
+  --font-display: 'Cabinet Grotesk', 'Inter Tight', sans-serif;
+  --font-body: 'Inter Tight', system-ui, sans-serif;
+  --ease-cine: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Fluid scale units — the whole landing tracks the viewport width.
+     --u: shapes/chrome; --us: small text (gentler curve, floored for
+     legibility). High-DPI/zoomed browsers present a smaller CSS viewport,
+     so everything scales down with it automatically. */
+  --u: clamp(0.62px, 0.0769vw, 0.95px);
+  --us: clamp(0.85px, 0.0667vw, 1px);
+
+  min-height: 100vh;
+  background: var(--pine);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: calc(var(--us) * 16);
+  line-height: 1.55;
+  /* clip (not hidden): hidden turns the root into a scroll container and
+     breaks window scroll events in embedded webviews */
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.rankora-root *,
+.rankora-root *::before,
+.rankora-root *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html:has(.rankora-root) { scroll-behavior: auto; } /* we drive smoothness ourselves — landing only */
+
+.rankora-root ::selection { background: var(--coral); color: var(--ivory); }
+
+.rankora-root button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+/* ---------------------------------------------------------------
+   Fixed cinematic stage
+   --------------------------------------------------------------- */
+.rankora-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(120% 90% at 50% 10%, #0D2242 0%, var(--pine) 55%, var(--pine-deep) 100%);
+}
+
+.rankora-canvas-stage { position: absolute; inset: 0; }
+.rankora-canvas-stage canvas { display: block; width: 100%; height: 100%; }
+
+.rankora-canvas-loading {
+  position: absolute; inset: 0;
+  background: var(--pine);
+}
+
+.rankora-higgsfield {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  mix-blend-mode: screen;
+  opacity: 0.7;
+  /* smooth the low-res canvas upscale — kills banding, keeps the wash clean */
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+.rankora-vignette {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(130% 100% at 50% 50%, transparent 52%, rgba(4, 12, 10, 0.55) 100%);
+}
+
+/* WebGL fallback (static, elegant) */
+.rankora-fallback { position: absolute; inset: 0; overflow: hidden; }
+.rankora-fallback__glow {
+  position: absolute; top: 18%; left: 50%;
+  width: 46vmin; height: 64vmin;
+  transform: translateX(-50%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(29, 111, 242, 0.16), transparent 70%);
+  filter: blur(30px);
+}
+.rankora-fallback__grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(91, 141, 239, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 141, 239, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(75% 60% at 50% 45%, black 30%, transparent 100%);
+}
+
+/* ---------------------------------------------------------------
+   Chrome: nav / rail / progress / footer / preloader
+   --------------------------------------------------------------- */
+.rankora-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: calc(var(--u) * 12) calc(var(--u) * 26);
+  transition: background 0.5s, backdrop-filter 0.5s, border-color 0.5s;
+  border-bottom: 1px solid transparent;
+}
+.rankora-nav.is-scrolled {
+  background: rgba(7, 20, 18, 0.62);
+  backdrop-filter: blur(14px);
+  border-bottom-color: var(--hairline);
+}
+.rankora-nav__brand { display: flex; align-items: center; gap: calc(var(--u) * 9); text-decoration: none; color: inherit; }
+.rankora-nav__brand svg { width: calc(var(--u) * 22); height: calc(var(--u) * 22); }
+.rankora-wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ivory);
+  font-size: calc(var(--us) * 17);
+}
+.rankora-nav__links { display: flex; gap: calc(var(--u) * 24); }
+.rankora-nav__links button {
+  font-size: calc(var(--us) * 12.5); letter-spacing: 0.02em;
+  color: rgba(247, 250, 255, 0.66);
+  transition: color 0.3s;
+  font-weight: 500;
+}
+.rankora-nav__links button:hover { color: var(--coral); }
+
+.rankora-nav__cta { padding: calc(var(--u) * 7) calc(var(--u) * 16); font-size: calc(var(--us) * 12); white-space: nowrap; }
+
+.rankora-progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 70;
+  background: rgba(247, 250, 255, 0.05);
+}
+.rankora-progress span {
+  display: block; height: 100%; width: 100%;
+  background: linear-gradient(90deg, var(--coral), #ff8a63);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+.rankora-rail {
+  position: fixed; right: 26px; top: 50%; transform: translateY(-50%);
+  z-index: 55; display: flex; flex-direction: column; gap: 12px;
+}
+.rankora-rail__dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(247, 250, 255, 0.18);
+  position: relative;
+  transition: background 0.4s, box-shadow 0.4s, transform 0.4s;
+}
+.rankora-rail__dot.is-active {
+  background: var(--coral);
+  box-shadow: 0 0 10px rgba(29, 111, 242, 0.8);
+  transform: scale(1.25);
+}
+.rankora-rail__dot span {
+  position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+  font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(247, 250, 255, 0.55);
+  opacity: 0; transition: opacity 0.3s; white-space: nowrap;
+  pointer-events: none;
+}
+.rankora-rail__dot.is-active span { opacity: 1; }
+
+.rankora-footer {
+  position: relative; z-index: 10;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 74px 24px 60px;
+  background: linear-gradient(180deg, transparent, rgba(4, 12, 10, 0.85) 40%);
+  border-top: 1px solid var(--hairline);
+  text-align: center;
+}
+.rankora-footer > div { display: flex; align-items: center; gap: 10px; }
+.rankora-footer p { color: rgba(247, 250, 255, 0.55); font-size: calc(var(--us) * 13); line-height: 1.7; }
+.rankora-footer__fine { color: rgba(247, 250, 255, 0.3); font-size: calc(var(--us) * 11); letter-spacing: 0.06em; }
+.rankora-footer svg { width: calc(var(--u) * 18); height: calc(var(--u) * 18); }
+
+.rankora-hero__badge svg { width: calc(var(--u) * 18); height: calc(var(--u) * 18); }
+.rankora-preloader svg { width: calc(var(--u) * 38); height: calc(var(--u) * 38); }
+
+.rankora-preloader {
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--pine-deep);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+}
+.rankora-preloader__bar {
+  width: 180px; height: 2px;
+  background: rgba(247, 250, 255, 0.1);
+  border-radius: 2px; overflow: hidden;
+}
+.rankora-preloader__bar span {
+  display: block; height: 100%;
+  background: var(--coral);
+  box-shadow: 0 0 12px rgba(29, 111, 242, 0.8);
+  transition: width 0.15s linear;
+}
+.rankora-footer .rankora-wordmark { font-size: calc(var(--us) * 15); }
+
+.rankora-preloader__pct {
+  font-size: 11px; letter-spacing: 0.3em; color: rgba(247, 250, 255, 0.4);
+}
+
+/* ---------------------------------------------------------------
+   Typography
+   --------------------------------------------------------------- */
+.rankora-h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: calc(var(--u) * 62);
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  color: var(--ivory);
+}
+.rankora-h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  color: var(--ivory);
+}
+.rankora-h2--xl { font-size: calc(var(--u) * 40); }
+.rankora-h2--lg { font-size: calc(var(--u) * 31); }
+.rankora-h2--center { text-align: center; }
+.rankora-h2--left { text-align: left; }
+.rankora-h2__line-wrap { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.rankora-h2__line {
+  display: inline-block;
+  transform: translateY(112%);
+  opacity: 0;
+  transition: transform 0.9s var(--ease-cine), opacity 0.6s ease;
+  will-change: transform;
+  /* keep headlines readable over moving 3D nodes */
+  text-shadow: 0 2px 24px rgba(4, 14, 12, 0.85), 0 0 60px rgba(4, 14, 12, 0.5);
+}
+.is-active .rankora-h2__line { transform: translateY(0); opacity: 1; }
+
+/* CSS reveal util (phase-gated) */
+.rv { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s var(--ease-cine); }
+.is-active .rv { opacity: 1; transform: none; }
+
+.rankora-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: calc(var(--us) * 11.5); font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 22px;
+}
+.rankora-eyebrow__tick {
+  width: 22px; height: 2px; background: var(--coral);
+  box-shadow: 0 0 8px rgba(29, 111, 242, 0.7);
+}
+
+.rankora-lede {
+  margin-top: 20px;
+  font-size: calc(var(--us) * 15.5);
+  line-height: 1.7;
+  color: rgba(247, 250, 255, 0.78);
+  max-width: 560px;
+  text-shadow: 0 1px 14px rgba(4, 14, 12, 0.9), 0 0 32px rgba(4, 14, 12, 0.6);
+}
+.rankora-h2--center ~ .rankora-lede { margin-left: auto; margin-right: auto; }
+
+/* ---------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------- */
+.rankora-cta {
+  position: relative;
+  padding: calc(var(--u) * 11) calc(var(--u) * 21);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: calc(var(--us) * 13);
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  transition: box-shadow 0.35s;
+}
+.rankora-cta--primary {
+  /* pine ink on coral ≈ 4.6:1 — WCAG AA on the accent */
+  background: var(--coral);
+  color: var(--pine-deep);
+  box-shadow: 0 8px 30px rgba(29, 111, 242, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.rankora-cta--primary:hover { box-shadow: 0 10px 42px rgba(29, 111, 242, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+
+/* Keyboard visibility: one branded focus ring everywhere */
+:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.rankora-modal__close:focus-visible,
+.rankora-role:focus-visible,
+.rankora-rail__dot:focus-visible { outline-offset: 2px; }
+
+/* Screen-reader-only utility */
+.rankora-sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------------------------------------------------------------
+   Story chrome — the narrative caption at the bottom edge
+   --------------------------------------------------------------- */
+.rankora-storycaption {
+  position: fixed; bottom: 34px; left: 50%; transform: translateX(-50%);
+  z-index: 45;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  pointer-events: none;
+  max-width: min(760px, 86vw);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.rankora-storycaption.is-hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(14px);
+}
+.rankora-storycaption__text {
+  font-family: var(--font-display);
+  font-weight: 500; font-size: clamp(15px, 1.5vw, 19px);
+  color: rgba(247, 250, 255, 0.92);
+  text-align: center;
+  text-shadow: 0 2px 18px rgba(4, 14, 12, 0.95), 0 0 46px rgba(4, 14, 12, 0.7);
+  animation: storyfade 0.8s var(--ease-cine);
+}
+.rankora-storycaption__line {
+  width: 34px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--coral), transparent);
+  box-shadow: 0 0 10px rgba(29, 111, 242, 0.55);
+}
+@keyframes storyfade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 900px) {
+  .rankora-storycaption { bottom: 22px; }
+}
+.rankora-cta--ghost {
+  background: rgba(247, 250, 255, 0.04);
+  color: var(--ivory);
+  border: 1px solid rgba(247, 250, 255, 0.18);
+  backdrop-filter: blur(6px);
+}
+.rankora-cta--ghost:hover { background: rgba(247, 250, 255, 0.09); border-color: rgba(247, 250, 255, 0.32); }
+
+/* ---------------------------------------------------------------
+   Overlays / gates
+   --------------------------------------------------------------- */
+.rankora-overlays {
+  position: fixed; inset: 0; z-index: 20;
+  pointer-events: none;
+}
+.rankora-gate {
+  position: absolute; inset: 0;
+  display: flex; align-items: center;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.55s ease, visibility 0.55s;
+  /* tall sections scroll instead of clipping under the nav */
+  overflow-y: auto;
+  padding: 84px 0 40px;
+}
+.rankora-gate.is-active { opacity: 1; visibility: visible; }
+
+/* The finale yields to the product showcase as it scrolls in */
+.rankora-section.is-veiled {
+  opacity: 0;
+  transform: translateY(-26px);
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-cine);
+  pointer-events: none;
+}
+.rankora-section.is-veiled .rankora-cta { pointer-events: none; }
+.rankora-gate.is-active .rankora-cta,
+.rankora-gate.is-active .rankora-layer,
+.rankora-gate.is-active .rankora-chip,
+.rankora-gate.is-active .rankora-orbit-card {
+  pointer-events: auto;
+}
+
+/* Soft scrim behind overlay text: calms the 3D scene behind copy so
+   headlines stay legible while the world still moves around it */
+.rankora-gate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    66% 58% at 50% 46%,
+    rgba(5, 13, 27, 0.6) 0%,
+    rgba(5, 13, 27, 0.38) 48%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.55s ease;
+  pointer-events: none;
+}
+.rankora-gate.is-active::before { opacity: 1; }
+
+/* Reading-side tint for left-anchored copy over the hero document */
+.rankora-gate.is-active .rankora-section--left::after,
+.rankora-gate.is-active .rankora-hero__inner::after {
+  content: '';
+  position: absolute;
+  inset: -8% -12%;
+  z-index: -1;
+  background: radial-gradient(
+    58% 60% at 38% 50%,
+    rgba(5, 13, 27, 0.55) 0%,
+    rgba(5, 13, 27, 0.3) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.rankora-section {
+  position: relative;
+  width: 100%;
+  margin: auto 0; /* keep content vertically centered in the scrollable gate */
+  padding: 0 max(6vw, 32px);
+  display: flex; flex-direction: column;
+}
+.rankora-section--left { align-items: flex-start; max-width: 760px; }
+.rankora-section--right { align-items: flex-end; margin-left: auto; text-align: right; max-width: 760px; }
+.rankora-section--right .rankora-layerlist { align-items: flex-end; }
+.rankora-section--right .rankora-lede { margin-left: auto; }
+.rankora-section--center { align-items: center; text-align: center; }
+.rankora-section--top { justify-content: flex-start; padding-top: 2vh; }
+
+/* Prologue hint */
+.rankora-prologue { width: 100%; height: 100%; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 6.5vh; }
+.rankora-scroll-hint {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  color: rgba(247, 250, 255, 0.55);
+  font-size: 11.5px; letter-spacing: 0.28em; text-transform: uppercase;
+}
+.rankora-scroll-hint__line {
+  width: 1px; height: 44px;
+  background: linear-gradient(180deg, var(--coral), transparent);
+  transform-origin: top;
+}
+
+/* Hero */
+.rankora-hero { width: 100%; margin: auto 0; padding: 0 max(6vw, 32px); display: flex; align-items: center; }
+.rankora-hero__inner { position: relative; max-width: 880px; }
+.rankora-hero__badge {
+  display: inline-flex; align-items: center; gap: calc(var(--u) * 10);
+  padding: calc(var(--u) * 7) calc(var(--u) * 15) calc(var(--u) * 7) calc(var(--u) * 10);
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid var(--hairline);
+  backdrop-filter: blur(8px);
+  font-size: calc(var(--us) * 11.5); letter-spacing: 0.06em; color: rgba(247, 250, 255, 0.75);
+  margin-bottom: calc(var(--u) * 24);
+}
+.rankora-hero__tag {
+  margin-top: 26px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: calc(var(--us) * 20);
+  color: rgba(247, 250, 255, 0.92);
+}
+.rankora-hero__ctas { display: flex; gap: 16px; margin-top: 38px; flex-wrap: wrap; }
+.rankora-hero__flow {
+  margin-top: 56px;
+  font-size: 12.5px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(247, 250, 255, 0.38);
+}
+.rankora-hero__flow i { color: var(--coral); font-style: normal; }
+
+/* Parsing layer list — compact two-column grid so the section never
+   overflows the viewport on shorter screens */
+.rankora-layerlist {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: min(640px, 100%);
+}
+.rankora-layer {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 15px;
+  border-radius: 14px;
+  background: var(--glass);
+  border: 1px solid var(--hairline);
+  backdrop-filter: blur(10px);
+}
+.rankora-layer__idx { font-size: 11px; color: #FF8163; font-weight: 600; letter-spacing: 0.12em; }
+.rankora-layer__name { font-weight: 600; font-size: 15px; color: rgba(247, 250, 255, 0.9); }
+.rankora-layer__wire {
+  margin-left: auto; width: 54px; height: 1.5px;
+  background: linear-gradient(90deg, var(--coral), transparent);
+  box-shadow: 0 0 6px rgba(29, 111, 242, 0.5);
+}
+
+/* Score */
+.rankora-section .rankora-score { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 8px; }
+.rankora-score__num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: calc(var(--u) * 74);
+  line-height: 1;
+  color: var(--ivory);
+  text-shadow: 0 0 60px rgba(29, 111, 242, 0.35);
+}
+.rankora-score__label {
+  font-size: 13px; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(247, 250, 255, 0.6);
+}
+.rankora-score-orbits {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px; width: min(880px, 92vw); margin-top: 42px;
+}
+.rankora-orbit-card {
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--glass-strong);
+  border: 1px solid var(--hairline);
+  backdrop-filter: blur(12px);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.rankora-orbit-card strong { font-size: calc(var(--us) * 13.5); color: var(--ivory); }
+.rankora-orbit-card span { font-size: 12.5px; color: rgba(247, 250, 255, 0.55); }
+.rankora-orbit-card--0 { border-top: 2px solid var(--sage); }
+.rankora-orbit-card--1 { border-top: 2px solid var(--coral); }
+.rankora-orbit-card--2 { border-top: 2px solid var(--coral); }
+.rankora-orbit-card--3 { border-top: 2px solid var(--sage); }
+
+/* Premium hover micro-interactions: lift + sheen sweep + accent bar */
+.rankora-orbit-card,
+.rankora-layer,
+.rankora-chip,
+.rankora-ready__card {
+  position: relative;
+  transition:
+    transform 0.45s var(--ease-cine),
+    border-color 0.35s ease,
+    background 0.35s ease,
+    box-shadow 0.45s ease;
+}
+.rankora-orbit-card:hover,
+.rankora-layer:hover {
+  transform: translateY(-5px);
+  border-color: rgba(247, 250, 255, 0.22);
+  background: rgba(247, 250, 255, 0.07);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(247, 250, 255, 0.08);
+}
+.rankora-orbit-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 30%, rgba(247, 250, 255, 0.07) 50%, transparent 62%);
+  background-size: 260% 100%;
+  background-position: 130% 0;
+  opacity: 0;
+  transition: background-position 0.9s var(--ease-cine), opacity 0.3s;
+  pointer-events: none;
+}
+.rankora-orbit-card:hover::after {
+  background-position: -40% 0;
+  opacity: 1;
+}
+.rankora-chip:hover {
+  transform: translateY(-3px);
+  border-color: rgba(29, 111, 242, 0.45);
+  color: var(--ivory);
+}
+.rankora-ready__card:hover {
+  border-color: rgba(247, 250, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Gap legend */
+.rankora-gaplegend { display: flex; gap: 26px; margin-top: 30px; font-size: 13px; color: rgba(247, 250, 255, 0.6); }
+.rankora-gaplegend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+
+/* Chips */
+.rankora-chiplist { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 34px; }
+.rankora-chip {
+  padding: calc(var(--u) * 8) calc(var(--u) * 15); border-radius: 999px;
+  background: var(--glass); border: 1px solid var(--hairline);
+  font-size: 13px; color: rgba(247, 250, 255, 0.75);
+  backdrop-filter: blur(8px);
+}
+
+/* ---------------------------------------------------------------
+   Analysis modal
+   --------------------------------------------------------------- */
+.rankora-modal-backdrop {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(5, 14, 12, 0.72);
+  backdrop-filter: blur(16px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 22px;
+}
+.rankora-modal {
+  position: relative;
+  width: min(620px, 100%);
+  max-height: 88vh; overflow-y: auto;
+  border-radius: 28px;
+  background: linear-gradient(165deg, #10294F 0%, #0B1F3A 60%, #071629 100%);
+  border: 1px solid rgba(247, 250, 255, 0.1);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(247, 250, 255, 0.07);
+  padding: 34px 36px 38px;
+}
+.rankora-modal__glow {
+  position: absolute; top: -60%; left: 20%; width: 70%; height: 90%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(29, 111, 242, 0.16), transparent 70%);
+  pointer-events: none;
+}
+.rankora-modal__head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; }
+.rankora-modal__head h3 { font-family: var(--font-display); font-size: calc(var(--us) * 22); font-weight: 700; }
+.rankora-modal__head p { color: rgba(247, 250, 255, 0.5); font-size: 13.5px; margin-top: 3px; }
+.rankora-modal__close {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: rgba(247, 250, 255, 0.06); border: 1px solid var(--hairline);
+  color: rgba(247, 250, 255, 0.65); font-size: 13px;
+  transition: background 0.25s, color 0.25s;
+}
+.rankora-modal__close:hover { background: rgba(29, 111, 242, 0.18); color: var(--ivory); }
+.rankora-modal__close { min-width: 34px; min-height: 34px; }
+
+.rankora-modal__body { position: relative; display: flex; flex-direction: column; gap: 22px; }
+
+.rankora-dropzone {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px;
+  padding: 44px 20px;
+  border: 1.5px dashed rgba(247, 250, 255, 0.2);
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.3s, background 0.3s;
+  background: rgba(247, 250, 255, 0.025);
+}
+.rankora-dropzone.is-over { border-color: var(--coral); background: var(--coral-soft); }
+.rankora-dropzone.is-over .rankora-dropzone__icon { transform: scale(1.12) translateY(-3px); background: rgba(29, 111, 242, 0.22); }
+.rankora-dropzone:hover { border-color: rgba(247, 250, 255, 0.34); }
+.rankora-dropzone__error {
+  color: #FF8163;
+  font-size: 12.5px;
+  animation: storyfade 0.3s ease;
+}
+.rankora-dropzone__icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; margin-bottom: 2px;
+  border-radius: 50%;
+  border: 1px solid rgba(29, 111, 242, 0.35);
+  background: rgba(29, 111, 242, 0.12);
+  font-size: 21px; color: #FF8163;
+  transition: transform 0.4s var(--ease-cine), background 0.3s;
+}
+.rankora-dropzone strong { font-size: 16.5px; font-weight: 600; }
+.rankora-dropzone__hint { font-size: 12.5px; color: rgba(247, 250, 255, 0.5); }
+
+.rankora-field label {
+  display: block; font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(247, 250, 255, 0.5); margin-bottom: 10px;
+}
+.rankora-roles { display: flex; flex-wrap: wrap; gap: 8px; }
+.rankora-role {
+  padding: 9px 15px; border-radius: 999px;
+  background: rgba(247, 250, 255, 0.05); border: 1px solid var(--hairline);
+  font-size: 13px; color: rgba(247, 250, 255, 0.72);
+  transition: all 0.25s;
+}
+.rankora-role:hover { border-color: rgba(247, 250, 255, 0.3); color: var(--ivory); }
+.rankora-role.is-selected {
+  background: var(--coral); border-color: var(--coral); color: var(--pine-deep);
+  font-weight: 600;
+  box-shadow: 0 4px 18px rgba(29, 111, 242, 0.4);
+}
+
+.rankora-modal__cta {
+  padding: 16px; border-radius: 14px;
+  background: var(--coral); color: var(--pine-deep);
+  font-family: var(--font-display); font-weight: 700; font-size: 17px;
+  box-shadow: 0 10px 34px rgba(29, 111, 242, 0.4);
+  transition: background 0.25s, transform 0.15s;
+}
+.rankora-modal__cta:hover { background: #f06b4d; }
+.rankora-modal__cta:active { transform: scale(0.98); }
+
+/* Sequence */
+.rankora-sequence { align-items: center; text-align: center; padding: 18px 0 10px; }
+.rankora-sequence__line { display: flex; gap: 6px; margin-bottom: 30px; }
+.rankora-sequence__line i {
+  width: 44px; height: 3px; border-radius: 3px;
+  background: rgba(247, 250, 255, 0.12);
+}
+.rankora-sequence__stage { display: flex; flex-direction: column; gap: 6px; align-items: center; min-height: 110px; }
+.rankora-sequence__num { font-size: 12px; letter-spacing: 0.3em; color: #FF8163; font-weight: 700; }
+.rankora-sequence__stage strong { font-family: var(--font-display); font-size: calc(var(--us) * 20); font-weight: 700; }
+.rankora-sequence__sub { color: rgba(247, 250, 255, 0.55); font-size: 14px; }
+.rankora-sequence__meta { font-size: 12px; color: rgba(247, 250, 255, 0.4); }
+
+/* Ready */
+.rankora-ready__score { display: flex; align-items: center; gap: 24px; }
+.rankora-ready__num {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: calc(var(--us) * 52); line-height: 1; color: var(--ivory);
+  text-shadow: 0 0 44px rgba(29, 111, 242, 0.4);
+}
+.rankora-ready__label { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(247, 250, 255, 0.6); line-height: 1.7; }
+.rankora-ready__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.rankora-ready__card {
+  padding: 18px 20px; border-radius: 16px;
+  background: rgba(247, 250, 255, 0.04); border: 1px solid var(--hairline);
+}
+.rankora-ready__card h4 { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 10px; }
+.rankora-ready__card ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.rankora-ready__card li { font-size: 13.5px; color: rgba(247, 250, 255, 0.78); }
+.rankora-ready__steps h4 { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(247, 250, 255, 0.5); margin-bottom: 10px; }
+.rankora-ready__step {
+  display: flex; gap: 12px; align-items: baseline;
+  padding: 11px 15px; border-radius: 12px;
+  background: rgba(247, 250, 255, 0.035); border: 1px solid var(--hairline);
+  font-size: 13.5px; color: rgba(247, 250, 255, 0.78); margin-bottom: 8px;
+}
+.rankora-ready__step span { color: #FF8163; font-weight: 700; font-size: 12px; }
+
+/* Short viewports: let overlays scroll instead of clipping content */
+@media (max-height: 560px) {
+  .rankora-gate { overflow-y: auto; align-items: flex-start; }
+  .rankora-section, .rankora-hero { padding-top: 96px; padding-bottom: 40px; }
+}
+
+/* Large trackpads / touch: comfortable minimum targets */
+@media (pointer: coarse) {
+  .rankora-cta { min-height: 46px; }
+  .rankora-role, .rankora-chip { padding: 11px 17px; }
+  .rankora-modal__close { width: 40px; height: 40px; }
+}
+
+/* ---------------------------------------------------------------
+   Responsive + accessibility
+   --------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .rankora-nav { padding: 14px 20px; }
+  .rankora-nav__links { display: none; }
+  .rankora-rail { display: none; }
+  .rankora-score-orbits { grid-template-columns: repeat(2, 1fr); }
+  .rankora-ready__grid { grid-template-columns: 1fr; }
+  .rankora-modal { padding: 26px 22px 30px; }
+  .rankora-hero { justify-content: center; }
+  .rankora-hero__inner { text-align: center; }
+  .rankora-hero__ctas { justify-content: center; }
+  .rankora-section--left,
+  .rankora-section--right { align-items: center; text-align: center; max-width: 100%; margin: 0 auto; }
+  .rankora-section--right .rankora-lede { margin-left: auto; margin-right: auto; }
+  .rankora-layerlist { grid-template-columns: 1fr; width: min(420px, 100%); }
+  .rankora-layer { text-align: left; }
+}
+
+@media (max-width: 520px) {
+  .rankora-score-orbits { grid-template-columns: 1fr; }
+  .rankora-h1 { font-size: min(11.5vw, 46px); }
+  .rankora-sequence__line i { width: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001s !important;
+    transition-duration: 0.001s !important;
+  }
+  .rankora-scroll-hint__line { transform: none; animation: none; }
+  .rankora-progress span { transition: none; }
+}
+
+/* ---------------------------------------------------------------
+   Showcase3D — cursor-reactive layered product stage
+   --------------------------------------------------------------- */
+.rankora-showcase {
+  position: relative;
+  z-index: 10;
+  padding: 130px max(5vw, 24px) 40px;
+  background: linear-gradient(180deg, rgba(5, 13, 27, 0) 0%, #061412 14%, #061412 100%);
+  overflow: hidden;
+}
+.rankora-showcase__inner { max-width: 1180px; margin: 0 auto; }
+.rankora-showcase__head { text-align: center; max-width: 640px; margin: 0 auto 54px; }
+.rankora-showcase__head .rankora-h2 em {
+  font-style: normal;
+  color: var(--coral);
+}
+.rankora-showcase__sub {
+  margin-top: 16px;
+  color: rgba(247, 250, 255, 0.6);
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+.rankora-showcase__controls {
+  margin-top: 26px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; flex-wrap: wrap;
+}
+.rankora-showcase__seg {
+  display: inline-flex; padding: 4px; border-radius: 999px;
+  background: rgba(247, 250, 255, 0.045);
+  border: 1px solid var(--hairline);
+}
+.rankora-showcase__seg button {
+  padding: 8px 16px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 600;
+  color: rgba(247, 250, 255, 0.6);
+  transition: background 0.25s, color 0.25s;
+}
+.rankora-showcase__seg button.is-on {
+  background: var(--coral); color: var(--pine-deep);
+}
+.rankora-showcase__pill {
+  padding: 9px 16px; border-radius: 999px;
+  background: rgba(247, 250, 255, 0.045);
+  border: 1px solid var(--hairline);
+  font-size: 12.5px; font-weight: 600;
+  color: rgba(247, 250, 255, 0.72);
+  transition: border-color 0.25s, color 0.25s;
+}
+.rankora-showcase__pill:hover, .rankora-showcase__pill.is-on {
+  border-color: rgba(29, 111, 242, 0.5); color: var(--ivory);
+}
+
+.rankora-showcase__stage-wrap {
+  perspective: 1400px;
+  padding: 44px 10px 74px;
+}
+.rk3d-stage {
+  position: relative;
+  width: min(940px, 100%);
+  margin: 0 auto;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.rk3d-layer { transition: transform 0.15s linear; }
+
+/* LAYER 0 — dot-grid foundation */
+.rk3d-floor {
+  position: absolute; inset: -30px;
+  border-radius: 30px;
+  border: 1px solid rgba(91, 141, 239, 0.14);
+  background:
+    radial-gradient(rgba(91, 141, 239, 0.16) 1px, transparent 1.5px) 0 0 / 26px 26px,
+    linear-gradient(160deg, rgba(91, 141, 239, 0.05), transparent 60%);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+/* LAYER 1 — app frame */
+.rk3d-frame {
+  position: relative;
+  border-radius: 24px;
+  padding: 20px 22px 24px;
+  background: linear-gradient(165deg, #10294F 0%, #0B1F3A 55%, #071629 100%);
+  border: 1px solid rgba(247, 250, 255, 0.1);
+  box-shadow: 0 60px 140px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(247, 250, 255, 0.07);
+}
+.rk3d-chrome {
+  display: flex; align-items: center; gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+.rk3d-dots { display: inline-flex; gap: 6px; }
+.rk3d-dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(247, 250, 255, 0.16); }
+.rk3d-dots i:first-child { background: #1D6FF2; }
+.rk3d-dots i:nth-child(2) { background: #C9A227; }
+.rk3d-dots i:nth-child(3) { background: #5B8DEF; }
+.rk3d-url {
+  font-family: ui-monospace, monospace;
+  font-size: 11px; color: rgba(247, 250, 255, 0.4);
+  letter-spacing: 0.04em;
+}
+.rk3d-live {
+  margin-left: auto;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: #93C5FD;
+  padding: 5px 11px; border-radius: 999px;
+  border: 1px solid rgba(91, 141, 239, 0.35);
+  background: rgba(91, 141, 239, 0.08);
+}
+.rk3d-grid {
+  margin-top: 18px;
+  display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px;
+}
+.rk3d-card {
+  border-radius: 16px;
+  background: rgba(247, 250, 255, 0.035);
+  border: 1px solid var(--hairline);
+  padding: 20px;
+}
+.rk3d-main { grid-column: span 7; }
+.rk3d-side { grid-column: span 5; display: flex; flex-direction: column; }
+.rk3d-cardhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+.rk3d-cardhead h3 { font-family: var(--font-display); font-size: 15.5px; font-weight: 700; }
+.rk3d-cardhead span {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #FF8163;
+  padding: 4px 10px; border-radius: 999px;
+  border: 1px solid rgba(29, 111, 242, 0.35);
+}
+.rk3d-scoreline { display: flex; align-items: center; gap: 22px; }
+.rk3d-donut { position: relative; width: 112px; height: 112px; flex-shrink: 0; }
+.rk3d-donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.rk3d-donut__track { fill: none; stroke: rgba(247, 250, 255, 0.08); stroke-width: 3; }
+.rk3d-donut__arc {
+  fill: none; stroke: var(--coral); stroke-width: 3;
+  stroke-linecap: round;
+}
+.rk3d-donut strong {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 33px; font-weight: 700;
+  padding-bottom: 12px;
+}
+.rk3d-donut em {
+  position: absolute; left: 0; right: 0; bottom: 26px;
+  text-align: center; font-style: normal;
+  font-size: 9.5px; letter-spacing: 0.14em; color: rgba(247, 250, 255, 0.45);
+}
+.rk3d-bars { flex: 1; display: flex; flex-direction: column; gap: 13px; }
+.rk3d-bar > div { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+.rk3d-bar span { color: rgba(247, 250, 255, 0.85); font-weight: 600; }
+.rk3d-bar b { color: #93C5FD; }
+.rk3d-bar i {
+  display: block; height: 6px; border-radius: 6px;
+  background: linear-gradient(90deg, #5B8DEF, #93C5FD);
+}
+.rk3d-bar.is-gap i { background: linear-gradient(90deg, var(--coral), #FF8163); }
+.rk3d-bar.is-gap b { color: #FF8163; }
+.rk3d-side em {
+  font-style: normal;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #93C5FD; margin-bottom: 10px;
+}
+.rk3d-side h4 { font-family: var(--font-display); font-size: 16px; font-weight: 700; line-height: 1.35; }
+.rk3d-side p { margin-top: 8px; font-size: 12.5px; line-height: 1.65; color: rgba(247, 250, 255, 0.55); }
+.rk3d-cta {
+  margin-top: auto; padding-top: 16px;
+  align-self: flex-start;
+  font-size: 12.5px; font-weight: 700;
+  color: #FF8163;
+}
+.rk3d-cta:hover { color: var(--ivory); }
+.rk3d-cands { display: flex; flex-direction: column; gap: 10px; }
+.rk3d-cand {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 13px; border-radius: 12px;
+  background: rgba(247, 250, 255, 0.04);
+  border: 1px solid var(--hairline);
+}
+.rk3d-cand > b {
+  width: 30px; height: 30px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 9px;
+  background: rgba(29, 111, 242, 0.16); border: 1px solid rgba(29, 111, 242, 0.4);
+  color: #FF8163; font-size: 11px; font-weight: 700;
+}
+.rk3d-cand strong { display: block; font-size: 13px; }
+.rk3d-cand span { display: block; font-size: 11px; color: rgba(247, 250, 255, 0.45); }
+.rk3d-cand em {
+  margin-left: auto; font-style: normal;
+  font-size: 13px; font-weight: 700; color: #93C5FD;
+}
+.rk3d-cand em.is-top { color: #FF8163; }
+
+/* LAYER 2 — floating capsules */
+.rk3d-float {
+  position: absolute;
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 15px; border-radius: 14px;
+  background: rgba(15, 44, 39, 0.92);
+  border: 1px solid rgba(247, 250, 255, 0.14);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  font-size: 12px; font-weight: 700;
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+.rk3d-float b {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #93C5FD;
+  padding: 3px 8px; border-radius: 999px;
+  background: rgba(91, 141, 239, 0.14);
+}
+.rk3d-float i.is-sage {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #5B8DEF;
+  box-shadow: 0 0 10px rgba(91, 141, 239, 0.8);
+}
+.rk3d-float--a { top: -20px; left: 44px; }
+.rk3d-float--b { top: 32%; right: -30px; }
+
+/* LAYER 3 — foreground copilot */
+.rk3d-chat {
+  position: absolute;
+  bottom: -46px; right: 26px;
+  width: min(340px, 78%);
+  padding: 17px 18px;
+  border-radius: 18px;
+  background: linear-gradient(170deg, #123A33, #0C2B26);
+  border: 1px solid rgba(247, 250, 255, 0.13);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
+}
+.rk3d-chat__who { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.rk3d-chat__who b {
+  width: 30px; height: 30px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  background: var(--coral); color: var(--pine-deep);
+  font-size: 11px; font-weight: 800;
+}
+.rk3d-chat__who strong { display: block; font-size: 12.5px; }
+.rk3d-chat__who span { display: block; font-size: 10.5px; color: rgba(247, 250, 255, 0.45); }
+.rk3d-chat p {
+  font-size: 12.5px; line-height: 1.65;
+  color: rgba(247, 250, 255, 0.82);
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: rgba(247, 250, 255, 0.05);
+  border: 1px solid var(--hairline);
+}
+
+@media (max-width: 900px) {
+  .rankora-showcase { padding-top: 90px; }
+  .rankora-showcase__stage-wrap { perspective: 1100px; padding: 30px 4px 80px; }
+  .rk3d-main, .rk3d-side { grid-column: span 12; }
+  .rk3d-scoreline { flex-direction: column; }
+  .rk3d-float { display: none; }
+  .rk3d-chat { position: relative; bottom: auto; right: auto; width: 100%; margin-top: 18px; }
+  .rk3d-floor { inset: -16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rk3d-layer { transition: none; }
+}
+
+/* Footer sits in normal flow after the story track — keep it clear
+   of the fixed caption band and give the tagline its own space */
+.rankora-footer {
+  padding: 96px 24px 150px;
+}
+.rankora-footer p {
+  color: rgba(247, 250, 255, 0.7);
+  font-size: 15px;
+}
+
+/* Keep section copy clear of the fixed caption band at the bottom */
+.rankora-gate {
+  padding-bottom: 120px;
+}
+
+/* Soft transition bed between the story track and the showcase:
+   the finale knot gets its own beat before the interface arrives */
+.rankora-showcase::before {
+  content: '';
+  position: absolute;
+  top: -70px; left: 0; right: 0; height: 70px;
+  background: linear-gradient(180deg, rgba(5, 13, 27, 0), #061412);
+  pointer-events: none;
+}
+
+/* Scrollbar — subtle, branded */
+::-webkit-scrollbar { width: 9px; }
+::-webkit-scrollbar-track { background: var(--pine-deep); }
+::-webkit-scrollbar-thumb {
+  background: rgba(91, 141, 239, 0.25);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(29, 111, 242, 0.5); }

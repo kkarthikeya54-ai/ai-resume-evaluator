@@ -1,0 +1,15 @@
+name = "hr-api"
+main = "hr-api.js"
+compatibility_date = "2024-01-01"
+
+# Vars are non-secret configuration (visible in the dashboard).
+# Secrets (wrangler secret put): FIREBASE_WEB_API_KEY
+[[kv_namespaces]]
+binding = "HR_KV"
+id = "e990003a43f54cd19c2d2ff5426fd876"
+
+[vars]
+FIREBASE_PROJECT_ID = "ai-driven-resume-evaluator"
+# Comma-separated origin allowlist; "*" allows any origin (acceptable while
+# every route still requires a valid Firebase ID token).
+ALLOWED_ORIGINS = "*"

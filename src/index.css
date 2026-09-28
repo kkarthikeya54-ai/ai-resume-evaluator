@@ -1,0 +1,1140 @@
+@import "tailwindcss";
+
+/* =============================================================
+   Single palette — the landing page's cinematic system.
+   Previously this file consumed the (now removed) multi-theme
+   context; every token below is now a static landing-palette color.
+   ============================================================= */
+
+:root {
+  --ivory: #F7FAFF;
+  --pine: #0B1F3A;
+  --pine-deep: #060F1F;
+  --sage: #5B8DEF;
+  --coral: #1D6FF2;
+  --coral-soft: rgba(29, 111, 242, 0.14);
+  --sage-soft: rgba(91, 141, 239, 0.12);
+  --glass: rgba(247, 250, 255, 0.1);
+  --glass-strong: rgba(9, 26, 51, 0.9);
+  --hairline: rgba(247, 250, 255, 0.16);
+
+  /* App-wide theme tokens (consumed as var(--theme-*) across pages) */
+  --theme-bg: #F7FAFF;
+  --theme-card: #FFFFFF;
+  --theme-card-hover: #EFF4FF;
+  --theme-text: #0B1F3A;
+  --theme-text-muted: #5A6C8C;
+  --theme-border: rgba(11, 31, 58, 0.12);
+  --theme-primary: #1D6FF2;
+  --theme-primary-hover: #1257C4;
+  --theme-primary-50: rgba(29, 111, 242, 0.08);
+  --theme-primary-100: rgba(29, 111, 242, 0.14);
+  --theme-primary-200: rgba(29, 111, 242, 0.26);
+  --theme-primary-600: #1D6FF2;
+  --theme-primary-700: #1257C4;
+  --theme-accent: #2563EB;
+  --theme-accent-50: rgba(37, 99, 235, 0.08);
+  --theme-accent-600: #2563EB;
+  --theme-rgb-primary: 29, 111, 242;
+  --theme-rgb-accent: 37, 99, 235;
+}
+
+@theme {
+  --color-bg-main: #F7FAFF;
+  --color-card: #FFFFFF;
+  --color-card-hover: #EFF4FF;
+  --color-primary: #1D6FF2;
+  --color-primary-hover: #1257C4;
+  --color-accent: #2563EB;
+  --color-secondary: #5A6C8C;
+  --color-border: rgba(11, 31, 58, 0.12);
+
+  /* Royal blue (primary) scale */
+  --color-primary-50: #EAF2FE;
+  --color-primary-100: #D5E4FD;
+  --color-primary-200: #AECBFB;
+  --color-primary-300: #7FABF7;
+  --color-primary-400: #4B87F5;
+  --color-primary-500: #1D6FF2;
+  --color-primary-600: #1257C4;
+  --color-primary-700: #0F47A0;
+  --color-primary-800: #0C3A82;
+  --color-primary-900: #092C63;
+
+  /* Sky (accent) scale */
+  --color-accent-50: #EFF6FF;
+  --color-accent-100: #DBEAFE;
+  --color-accent-200: #BFDBFE;
+  --color-accent-300: #93C5FD;
+  --color-accent-400: #60A5FA;
+  --color-accent-500: #3B82F6;
+  --color-accent-600: #2563EB;
+  --color-accent-700: #1D4ED8;
+  --color-accent-800: #1E40AF;
+  --color-accent-900: #1E3A8A;
+
+  /* Gold (shortlist / warning accent scale).
+     NOTE: -300/-400 are used as TEXT on light chips, so they are darker
+     ambers (≈4.5:1 on white). The old #EAA408 values measured ~2:1 on
+     white — flagged by the UI contrast sweep. Borders/backgrounds use
+     -50..-200 tints and -500+ solids, unchanged. */
+  --color-shortlist-50: rgba(234, 164, 8, 0.1);
+  --color-shortlist-100: rgba(234, 164, 8, 0.16);
+  --color-shortlist-200: rgba(234, 164, 8, 0.3);
+  --color-shortlist-300: #A16207;
+  --color-shortlist-400: #A16207;
+  --color-shortlist-500: #D09406;
+  --color-shortlist-600: #B27E05;
+  --color-shortlist-700: #916604;
+  --color-shortlist-800: #6E4E03;
+  --color-shortlist-900: #503902;
+
+  --font-sans: "Inter Tight", "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Fluid scale system — the app-wide equivalent of the landing's
+     --u/--us units. Tailwind sizes everything in rem, so scaling the
+     root font-size with the viewport makes every page (student and HR
+     dashboards, login, modals, tables) auto-adjust as one proportional
+     system. The curve targets the actual complaint: on scaled displays
+     (Windows 125% DPI → ~1536px CSS viewport) the UI rendered chunky,
+     so ~1536px lands at ≈85% of the old size, 1920px at ≈95%, very
+     wide monitors cap at 17.5px. Phones are exempt (below) so touch
+     targets keep their size, and the 13.5px floor keeps narrow windows
+     legible. Browser zoom keeps working on top of this. */
+  font-size: clamp(13.5px, 7.5px + 0.4vw, 17.5px);
+}
+
+/* Phones: no fluid shrink — thumb targets and mobile layouts were
+   designed at the 16px baseline. */
+@media (max-width: 767px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--coral);
+  color: var(--ivory);
+}
+
+/* Global keyboard focus indicator for WCAG accessibility */
+:focus-visible {
+  outline: 2px solid var(--sage);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Placeholder + native control theming on the dark surface */
+input::placeholder,
+textarea::placeholder {
+  color: var(--theme-text-muted);
+  opacity: 0.85;
+}
+
+input:not([type="checkbox"], [type="radio"]),
+textarea,
+select {
+  color-scheme: dark;
+}
+
+option {
+  background: var(--theme-card);
+  color: var(--theme-text);
+}
+
+/* Destructive action red-tint feedback micro-animation */
+.btn-destructive {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-destructive:hover {
+  background-color: rgba(220, 38, 38, 0.16) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(248, 113, 113, 0.45) !important;
+}
+
+.success-check .success-circle {
+  stroke: var(--theme-primary);
+  stroke-width: 3;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: circle-fill 0.6s ease-in-out forwards;
+}
+
+.success-check .success-checkmark {
+  stroke: var(--theme-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: checkmark-draw 0.4s ease-in-out 0.6s forwards;
+}
+
+@keyframes circle-fill {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes checkmark-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.progress-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(127, 169, 155, 0.22),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ---------- press feedback (global) ---------- */
+button:not(:disabled) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+/* ---------- scroll reveal ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- animated gradient text ---------- */
+.text-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ---------- aurora hero background ---------- */
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
+}
+
+.aurora::before {
+  width: 44vw;
+  height: 44vw;
+  left: -8vw;
+  top: -12vw;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(127, 169, 155, 0.16),
+    transparent 65%
+  );
+  animation: aurora-drift-1 18s ease-in-out infinite alternate;
+}
+
+.aurora::after {
+  width: 38vw;
+  height: 38vw;
+  right: -6vw;
+  top: 2vw;
+  background: radial-gradient(
+    circle at 70% 70%,
+    rgba(232, 93, 63, 0.12),
+    transparent 65%
+  );
+  animation: aurora-drift-2 24s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-drift-1 {
+  to {
+    transform: translate(7vw, 6vh) scale(1.12);
+  }
+}
+
+@keyframes aurora-drift-2 {
+  to {
+    transform: translate(-6vw, 8vh) scale(1.06);
+  }
+}
+
+/* ---------- dot grid ---------- */
+.dot-grid {
+  background-image: radial-gradient(rgba(250, 248, 245, 0.12) 1px, transparent 1px);
+  background-size: 1.625rem 1.625rem;
+  -webkit-mask-image: radial-gradient(
+    ellipse 72% 62% at 50% 0%,
+    #000 25%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    ellipse 72% 62% at 50% 0%,
+    #000 25%,
+    transparent 78%
+  );
+}
+
+/* ---------- spotlight card ---------- */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(
+    260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(232, 93, 63, 0.12),
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+.spotlight-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---------- animated progress bar ---------- */
+.bar-grow {
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: grow-x 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes grow-x {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ---------- onboarding ---------- */
+.onboarding-slide {
+  animation: onboarding-slide-in 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes onboarding-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.stagger-item {
+  opacity: 0;
+  animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.donut-arc {
+  stroke-dasharray: var(--dash);
+  stroke-dashoffset: var(--dash);
+  animation: donut-fill 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+}
+
+@keyframes donut-fill {
+  to {
+    stroke-dashoffset: var(--end);
+  }
+}
+
+/* ---------- modal spring-in ---------- */
+.modal-backdrop {
+  animation: modal-fade 0.2s ease-out;
+}
+
+.modal-card {
+  animation: modal-spring 0.34s cubic-bezier(0.2, 1.25, 0.35, 1);
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-spring {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- shimmer button ---------- */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -160%;
+  width: 55%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(250, 248, 245, 0.3),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.65s ease;
+}
+
+.btn-shine:hover::after {
+  left: 170%;
+}
+
+/* ---------- nav underline ---------- */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--coral), var(--sage));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link:hover::after,
+.nav-link.nav-link-active::after {
+  transform: scaleX(1);
+}
+
+/* ---------- animated connector line ---------- */
+.connector {
+  background: linear-gradient(90deg, var(--coral), var(--sage), var(--coral));
+  background-size: 200% 100%;
+  animation: connector-flow 4s linear infinite;
+}
+
+@keyframes connector-flow {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ---------- card hover lift + glow ---------- */
+.card-hover {
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
+
+/* ---------- 21dev Animated Border Beam & Shine ---------- */
+.border-beam-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-beam {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--beam-angle, 0deg) at 50% 50%,
+    transparent 0%,
+    transparent 70%,
+    var(--coral) 85%,
+    var(--sage) 95%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: beam-rotate 4s linear infinite;
+}
+
+@keyframes beam-rotate {
+  from {
+    --beam-angle: 0deg;
+  }
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ---------- 21dev Infinite Marquee ---------- */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 25s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- 21dev Glowing Card Shine ---------- */
+.glow-shine {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.glow-shine::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(232, 93, 63, 0.45), transparent, rgba(127, 169, 155, 0.45));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glow-shine:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =============================================================
+   MOTION SYSTEM 1 — cursor-interactive micro-animations
+   (also provides the skeleton shimmer + loader keyframes below)
+   ============================================================= */
+
+/* --- cursor-tracking glow card: fill + border follow the pointer --- */
+.cursor-glow {
+  position: relative;
+  isolation: isolate;
+}
+
+.cursor-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(
+    240px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(232, 93, 63, 0.13),
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cursor-glow::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    180px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(232, 93, 63, 0.55),
+    rgba(127, 169, 155, 0.18) 40%,
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cursor-glow:hover::before,
+.cursor-glow:focus-within::before {
+  opacity: 1;
+}
+
+.cursor-glow:hover::after {
+  opacity: 1;
+}
+
+.cursor-glow > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- staggered entrance for freshly loaded results --- */
+.stagger-in {
+  animation: fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stagger-in:nth-child(2) { animation-delay: 60ms; }
+.stagger-in:nth-child(3) { animation-delay: 120ms; }
+.stagger-in:nth-child(4) { animation-delay: 180ms; }
+.stagger-in:nth-child(5) { animation-delay: 240ms; }
+
+/* =============================================================
+   MOTION SYSTEM 2 — component loading animations
+   ============================================================= */
+
+/* shimmer sweep used by progress bars and skeletons alike */
+.skeleton-shimmer {
+  background: linear-gradient(
+    100deg,
+    rgba(250, 248, 245, 0.02) 20%,
+    rgba(11, 31, 58, 0.1) 50%,
+    rgba(250, 248, 245, 0.02) 80%
+  );
+  background-size: 220% 100%;
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
+}
+
+@keyframes skeleton-sweep {
+  from {
+    background-position: 180% 0;
+  }
+  to {
+    background-position: -80% 0;
+  }
+}
+
+/* tri-ring loader (parsing / analyzing states) */
+.loader-tri {
+  position: relative;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.loader-tri span {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+}
+
+.loader-tri span:nth-child(1) {
+  border-top-color: var(--coral);
+  animation: loader-spin 1.1s linear infinite;
+}
+
+.loader-tri span:nth-child(2) {
+  inset: 0.375rem;
+  border-right-color: var(--sage);
+  animation: loader-spin 1.1s linear 0.18s infinite reverse;
+}
+
+.loader-tri span:nth-child(3) {
+  inset: 0.75rem;
+  border-bottom-color: rgba(250, 248, 245, 0.55);
+  animation: loader-spin 1.1s linear 0.36s infinite;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* pipeline stage dots (HR progress: parse → evaluate → rank) */
+.pipeline-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 9999px;
+  border: 1.5px solid var(--theme-border);
+  background: rgba(250, 248, 245, 0.04);
+  font-size: 10px;
+  color: var(--theme-text-muted);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.pipeline-dot-active {
+  border-color: var(--coral);
+  background: var(--coral-soft);
+  color: var(--ivory);
+  box-shadow: 0 0 0 4px rgba(232, 93, 63, 0.12);
+  animation: pipeline-pulse 1.4s ease-in-out infinite;
+}
+
+.pipeline-dot-done {
+  border-color: var(--sage);
+  background: var(--sage-soft);
+  color: var(--sage);
+}
+
+@keyframes pipeline-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(232, 93, 63, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(29, 111, 242, 0.16);
+  }
+}
+
+/* =============================================================
+   MOTION SYSTEM 3 — skeletons (see src/components/Skeleton.jsx)
+   ============================================================= */
+
+
+.docx-preview h1,
+.docx-preview h2,
+.docx-preview h3,
+.docx-preview h4,
+.docx-preview h5 {
+  color: var(--theme-text);
+  font-weight: 600;
+  margin: 0.75em 0 0.35em;
+}
+
+.docx-preview h1 { font-size: 1.1rem; }
+.docx-preview h2 { font-size: 1rem; }
+.docx-preview h3, .docx-preview h4, .docx-preview h5 { font-size: 0.9rem; }
+
+.docx-preview p,
+.docx-preview li,
+.docx-preview td,
+.docx-preview blockquote {
+  color: var(--theme-text-muted);
+  line-height: 1.6;
+}
+
+.docx-preview ul,
+.docx-preview ol {
+  padding-left: 1.25rem;
+  margin: 0.35em 0;
+}
+
+.docx-preview table {
+  border-collapse: collapse;
+  margin: 0.5em 0;
+  width: 100%;
+}
+
+.docx-preview td,
+.docx-preview th {
+  border: 1px solid var(--theme-border);
+  padding: 0.35em 0.6em;
+}
+
+.docx-preview a {
+  color: var(--theme-primary);
+}
+
+.docx-preview img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Motion & loading layer ──────────────────────────────────── */
+/* Cursor-reactive spotlight (SpotlightCard): the component      */
+/* scripts --spot-x/--spot-y on pointermove; the gradient        */
+/* follows the cursor. Hover affordance gated to fine pointers.  */
+.spotlight-card { --spot-x: 50%; --spot-y: 50%; position: relative; overflow: hidden; }
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    340px circle at var(--spot-x) var(--spot-y),
+    rgb(232 93 63 / 0.14),
+    transparent 70%
+  );
+}
+.spotlight-card:hover::before { opacity: 1; }
+@media (pointer: fine) {
+  .spotlight-card:hover { border-color: rgb(127 169 155 / 0.45); }
+}
+
+/* 3D tilt glare (TiltCard3D): soft highlight tracking the tilt   */
+/* origin via the same scripted vars.                             */
+.tilt-glare {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgb(255 255 255 / 0.10) 0%,
+    transparent 70%
+  );
+}
+
+/* Skeleton shimmer sweep — soft coral→sage gradient over muted  */
+/* bars: the signature "AI is writing this" texture.             */
+.skeleton-base {
+  display: block;
+  background: rgb(255 255 255 / 0.08);
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-base::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  animation: skeleton-sweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(232 93 63 / 0.18) 45%,
+    rgb(127 169 155 / 0.22) 55%,
+    transparent 100%
+  );
+}
+@keyframes skeleton-sweep {
+  to { transform: translateX(100%); }
+}
+
+/* "Being generated" sway for skeleton cards and rows.           */
+.skeleton-shiver { animation: skeleton-shiver 2.8s ease-in-out infinite; }
+@keyframes skeleton-shiver {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-1px) rotate(0.15deg); }
+  60% { transform: translateY(1px) rotate(-0.15deg); }
+}
+
+/* Ambient shiver: when any skeleton block mounts it sets         */
+/* .skeleton-ambient on <html>; live content breathes in sync.    */
+.skeleton-ambient .stagger-item { animation: shiver-echo 2.8s ease-in-out infinite; }
+@keyframes shiver-echo {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-1px); }
+  60% { transform: translateY(1px); }
+}
+
+/* Staggered entrance for grids, rows, and result sections.      */
+.stagger-item { opacity: 0; animation: stagger-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* HR stage meter: coral ribbon flows while a stage runs, then   */
+/* settles to sage when the stage completes.                     */
+.hr-stage-meter { position: relative; overflow: hidden; }
+.hr-stage-meter__bar {
+  height: 100%;
+  background: linear-gradient(90deg, #1D6FF2, #4B87F5, #1D6FF2);
+  background-size: 200% 100%;
+  animation: stage-flow 1.8s linear infinite;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hr-stage-meter__bar--done { animation: none; background: #2563EB; }
+
+/* Extraction phase: lighter, faster shimmer to read as "local file work"
+   vs the steadier AI-scoring flow above. */
+.hr-stage-meter__bar--extracting {
+  background: linear-gradient(90deg, #60A5FA, #93C5FD, #60A5FA);
+  animation-duration: 1.1s;
+}
+@keyframes stage-flow {
+  from { background-position: 0% 0; }
+  to { background-position: 200% 0; }
+}
+
+/* Reduced motion: collapse everything to instant, static UI.    */
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-card::before,
+  .tilt-glare { display: none; }
+  .skeleton-base::after { animation: none; transform: none; opacity: 0.55; }
+  .skeleton-shiver,
+  .skeleton-ambient .stagger-item,
+  .stagger-item,
+  .hr-stage-meter__bar { animation: none; }
+  .stagger-item { opacity: 1; }
+  .confetti-dot,
+  .tw-caret { display: none; }
+  .ring-draw { animation: none; stroke-dashoffset: var(--ring-offset, 0) !important; }
+  .report-hero__meter-bar { animation: none; }
+  .report-hero__meter-bar--done { background: #2563EB; }
+}
+
+@keyframes skeleton-sweep-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Output-page motion v2 — hero ring, stage meter, tug-of-war, confetti */
+@keyframes ring-draw { to { stroke-dashoffset: var(--ring-offset, 0); } }
+
+/* Hero staged meter (student report card): coral flow while running,    */
+/* sage segment settle on completion — same language as the HR meter.    */
+.report-hero__meter { position: relative; overflow: hidden; }
+.report-hero__meter-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #1D6FF2, #4B87F5, #1D6FF2);
+  background-size: 200% 100%;
+  animation: stage-flow 1.8s linear infinite;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.report-hero__meter-bar--done { animation: none; background: #2563EB; }
+
+/* =============================================================
+   HireTire output-page design language ("Leaderboard" system)
+   A warmer, more decorative treatment for the ranked-results area:
+   glass metric tiles with numeric rings, a leaderboard hero card,
+   engraved depth instead of flat cards, and refined motion.
+   ============================================================= */
+
+/* Ornamental top edge for section cards — the podium gradient */
+.ht-crest {
+  position: relative;
+  overflow: hidden;
+}
+.ht-crest::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 4%, rgba(29, 111, 242, 0.75), rgba(59, 130, 246, 0.6), rgba(37, 99, 235, 0.55), transparent 96%);
+  pointer-events: none;
+}
+
+/* Engraved glass tile: inner top light + bottom shade */
+.ht-engraved {
+  background:
+    linear-gradient(180deg, rgba(11, 31, 58, 0.03), rgba(250, 248, 245, 0) 42%),
+    var(--theme-card);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(9, 26, 51, 0.08);
+}
+
+/* Conic progress ring for numeric metrics (uses --p: 0..100) */
+.ht-ring {
+  --p: 0;
+  background:
+    conic-gradient(var(--ring-accent, #1D6FF2) calc(var(--p) * 1%), rgba(11, 31, 58, 0.1) 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+}
+
+/* Sweep-in entrance for whole sections */
+@keyframes ht-sweep {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.ht-sweep {
+  animation: ht-sweep 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Digits that roll in with a soft blur */
+@keyframes ht-digit-in {
+  from { opacity: 0; filter: blur(6px); transform: translateY(6px); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+.ht-digit {
+  animation: ht-digit-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Shimmering text for the #1 leaderboard name */
+.ht-gilt {
+  background: linear-gradient(100deg, #0B1F3A 8%, #1D6FF2 38%, #0B1F3A 55%, #1D6FF2 80%, #0B1F3A 96%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: ht-gilt-shift 5.5s ease-in-out infinite;
+}
+@keyframes ht-gilt-shift {
+  0%, 100% { background-position: 0% 0; }
+  50% { background-position: 100% 0; }
+}
+
+/* Leaderboard hero: soft dual halo + woven pattern */
+.ht-hero {
+  position: relative;
+  isolation: isolate;
+}
+.ht-hero::before {
+  content: "";
+  position: absolute;
+  inset: -40% -10% auto -10%;
+  height: 180%;
+  z-index: -1;
+  background:
+    radial-gradient(42% 60% at 22% 30%, rgba(29, 111, 242, 0.16), transparent 70%),
+    radial-gradient(40% 58% at 78% 26%, rgba(59, 130, 246, 0.12), transparent 70%),
+    radial-gradient(55% 70% at 50% 90%, rgba(37, 99, 235, 0.14), transparent 72%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+/* Score bar with a lit tip dot (table + kanban) */
+.ht-bar {
+  position: relative;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(11, 31, 58, 0.1);
+  overflow: visible;
+}
+.ht-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  position: relative;
+}
+.ht-bar > span::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background: inherit;
+  box-shadow: 0 0 10px 1px currentColor;
+}
+.ht-bar--grow > span {
+  animation: ht-bar-grow 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes ht-bar-grow {
+  from { width: 0; }
+}
+
+/* Column count-up: fires the ring/bar transitions when mounted */
+@media (prefers-reduced-motion: reduce) {
+  .ht-sweep,
+  .ht-digit,
+  .ht-bar--grow > span {
+    animation: none;
+  }
+  .ht-gilt {
+    animation: none;
+    background: #1D6FF2;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    color: #1D6FF2;
+  }
+  .ht-hero::before {
+    filter: none;
+  }
+}

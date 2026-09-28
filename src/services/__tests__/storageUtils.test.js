@@ -1,0 +1,25 @@
+import { describe, it, expect } from "vitest";
+import { formatBytes } from "../storageUtils";
+
+describe("formatBytes", () => {
+  it("formats zero bytes", () => {
+    expect(formatBytes(0)).toBe("0 B");
+  });
+
+  it("formats bytes without decimals", () => {
+    expect(formatBytes(512)).toBe("512 B");
+  });
+
+  it("formats kilobytes", () => {
+    expect(formatBytes(1024)).toBe("1.0 KB");
+    expect(formatBytes(2048)).toBe("2.0 KB");
+  });
+
+  it("formats megabytes", () => {
+    expect(formatBytes(3 * 1024 * 1024)).toBe("3.0 MB");
+  });
+
+  it("formats gigabytes", () => {
+    expect(formatBytes(1024 ** 3)).toBe("1.0 GB");
+  });
+});

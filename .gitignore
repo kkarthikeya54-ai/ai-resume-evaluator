@@ -1,0 +1,17 @@
+node_modules
+dist
+.env
+.env.local
+*.local
+.playwright-mcp
+dev-dist
+
+# local dev artifacts
+*.log
+tmp-*.cjs
+__manifest-route.cjs
+*.pdf
+*.zip
+users.json
+proxy-test-result.json
+.freebuff

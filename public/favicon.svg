@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- HireTire mark: podium + #1 ring, blue & white edition -->
+  <rect width="120" height="120" rx="26" fill="#1D6FF2"/>
+  <!-- podium: 2nd (left), 1st (center), 3rd (right) -->
+  <rect x="18" y="70" width="24" height="32" rx="5" fill="#93C5FD"/>
+  <rect x="48" y="46" width="24" height="56" rx="5" fill="#FFFFFF"/>
+  <rect x="78" y="82" width="24" height="20" rx="5" fill="#0B1F3A" opacity="0.35"/>
+  <!-- #1 ring with the tire notch -->
+  <circle cx="60" cy="30" r="15" fill="none" stroke="#0B1F3A" stroke-width="6"/>
+  <line x1="60" y1="15" x2="60" y2="27" stroke="#1D6FF2" stroke-width="7"/>
+</svg>
