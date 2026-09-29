@@ -9,11 +9,12 @@ Four independently deployable pieces. Recommended order: **secrets → worker �
 ```bash
 cd worker
 wrangler login
-wrangler secret put NVIDIA_API_KEY     # paste the key
+wrangler secret put GEMINI_API_KEY     # primary provider
+wrangler secret put NVIDIA_API_KEY     # fallback (optional)
 wrangler deploy                        # prints the *.workers.dev URL
 ```
 
-Put that URL into `.env` as `VITE_AI_PROXY_URL`. (The `worker/README.md` walks the same steps — but prune its pasted example key first.)
+Put that URL into `.env` as `VITE_AI_PROXY_URL`. (`worker/README.md` walks the same steps.)
 
 ## 2. HR API Worker (Cloudflare) — the active HR backend
 
@@ -45,12 +46,12 @@ firebase deploy --only firestore:rules,storage
 ## 5. Frontend (static)
 
 ```bash
-npm run build        # → dist/ (PWA precache + patched pdfjs worker)
+npm run build        # → dist/ (patched pdfjs worker; no PWA)
 ```
 
-`dist/` is a static SPA — deployable to Firebase Hosting, Cloudflare Pages, or any static host **with SPA fallback** to `/index.html` (the Workbox `navigateFallback` covers client-side routing for returning PWA visitors; the host needs it for first visits).
+`dist/` is a static SPA. The live host is **Vercel** (`vercel.json` adds the SPA rewrite to `/index.html` + cache headers); Firebase Hosting, Cloudflare Pages, or any static host **with SPA fallback** to `/index.html` also works.
 
-Pre-deploy gate: `npm test && npm run lint && npm run build` — see [Quality Gates](../testing/quality-gates.md).
+Pre-deploy gate: `npm test && npm run lint && npm run test:ui && npm run build` — see [Quality Gates](../testing/quality-gates.md).
 
 ## Deploy-order gotchas
 
@@ -60,7 +61,7 @@ Pre-deploy gate: `npm test && npm run lint && npm run build` — see [Quality Ga
 | Cloud sync CORS errors after frontend deploy | Legacy Functions (with the CORS fix) not redeployed — or the HR API Worker isn't deployed | Deploy the [HR API Worker](../backend/hr-api.md) (`wrangler deploy -c wrangler.hr-api.toml`); legacy path: `firebase deploy --only functions` |
 | HR sync 401 Unauthorized | Worker's `FIREBASE_WEB_API_KEY` secret missing/expired | `wrangler secret put FIREBASE_WEB_API_KEY -c wrangler.hr-api.toml` → redeploy |
 | PDF parsing works locally, breaks in prod | Build-time worker patch missing | Verify `dist/assets/pdf.worker.*.mjs` contains the polyfill preamble; rebuild |
-| PWA serves stale app | Old service worker cached | `cleanupOutdatedCaches` is on; bump deploy / clear SW in DevTools |
+| Stale shell after deploy | A service worker from the **earlier PWA version** is still registered | `src/main.jsx` unregisters stale service workers on boot; if symptoms persist, hard-refresh / clear site data once |
 
 ---
 

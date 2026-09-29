@@ -22,7 +22,7 @@ Known failure signatures, causes, and fixes — accumulated from this project's 
 | HR sync `401 Unauthorized` | Worker's `FIREBASE_WEB_API_KEY` secret missing, or the ID token is expired | `wrangler secret put FIREBASE_WEB_API_KEY -c wrangler.hr-api.toml`; the client refreshes tokens automatically — retry after re-login |
 | Session opens on one device, redirect on another | Session only exists in that device's IndexedDB and the cloud mirror wasn't written yet | Expected fallback: HrDashboard redirects to `/sessions` when neither local store nor the worker has the record; run the analysis again on the new device |
 | Firestore `permission-denied` | Rules expect `resource.data.uid == auth.uid`; client wrote someone else's doc | Data-shape bug — sessions must carry the owner's uid |
-| Google sign-in popup closes instantly | Popup blocked or auth domain not authorized | Allow the popup; add the hosting domain in Firebase console |
+| Google sign-in popup closes instantly | Popup blocked, ad-blocker, blocked third-party cookies, or auth domain not authorized | Allow the popup / disable the blocker for the site; add the hosting domain in Firebase console. `authErrors.js` maps the code-specific hint — look for the `[Privacy]` note (popup-only sign-in means a fully blocked popup fails cleanly) |
 
 ## Storage & sessions
 
@@ -31,6 +31,7 @@ Known failure signatures, causes, and fixes — accumulated from this project's 
 | "Device storage quota is full" toast | IndexedDB full (HR sessions embed resume bytes) | Delete old sessions; the HR page shows usage stats |
 | Candidate report says "data not found" after reopen | sessionStorage cache gone + session payload missing candidates | Re-run the analysis; sessions persist candidates in IndexedDB |
 | Sessions vanished after role switch | Intentional: `switchRole` wipes workspace data | Documented in [Data & Privacy](../data-and-privacy/privacy-and-deletion.md) |
+| Cloud resume file missing after upload says success | Supabase envs set but the `resumes` bucket doesn't exist (or isn't public) | Create the bucket in Supabase — name `resumes`, public — then rebuild (see [Launch-Day Checklist → Supabase](./launch-checklist.md#14-supabase-storage---resume-files-in-the-cloud-optional-but-free)) |
 
 ## Build & dev
 
