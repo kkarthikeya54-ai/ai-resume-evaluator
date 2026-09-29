@@ -5,6 +5,7 @@ dist
 *.local
 .playwright-mcp
 dev-dist
+.freebuff/
 
 # local dev artifacts
 *.log
@@ -14,4 +15,11 @@ __manifest-route.cjs
 *.zip
 users.json
 proxy-test-result.json
-.freebuff
+
+# python / build caches
+__pycache__/
+*.pyc
+
+# editor / os junk
+.DS_Store
+Thumbs.db
