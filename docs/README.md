@@ -48,7 +48,7 @@ Every section is a folder. Start with **Getting Started**, then follow your role
 - **Cloud:** Cloudflare Workers (AI proxy + HR API w/ KV) · Firebase Auth + Firestore · Supabase Storage · (legacy) Cloud Functions
 - **AI:** LLM proxied server-side — the key **never ships in the browser bundle**
 - **Local-first:** resumes, sessions, and results live in the browser by default
-- **Quality:** Vitest (114 tests) · oxlint (0 errors) · UI contrast audit · production build
+- **Quality:** Vitest (111 tests) · oxlint (0 errors) · UI contrast audit · production build
 
 ![Architecture & data flow](./architecture.svg)
 
@@ -58,7 +58,7 @@ Every section is a folder. Start with **Getting Started**, then follow your role
 npm install
 cp .env.example .env        # fill in values (names in Operations → Configuration)
 npm run dev                 # vite dev server on :5173
-npm test                    # vitest (114 tests)
+npm test                    # vitest (111 tests)
 npm run lint                # oxlint
 npm run test:ui             # static UI contrast/hover audit (135 files)
 npm run build               # production build → dist/

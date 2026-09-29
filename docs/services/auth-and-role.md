@@ -27,7 +27,7 @@
 
 ## `utils/authErrors.js` — error localization
 
-Maps Firebase auth error codes to human messages (`auth/invalid-credential` → "Invalid email or password.", `auth/unauthorized-domain` → "add this domain to Authorized domains", `auth/network-request-failed` → network hint, …). Login/Signup render these strings directly. Google popup failures get extra treatment in `getGoogleAuthErrorMessage()`: blocks (popup-blocked / cancelled) → clean message; **server/config codes** (`auth/unauthorized-domain`, `auth/if-invalid-origin`) → config message instead of the browser hint; genuinely unknown codes → privacy hint (`PRIVACY_HINT`) plus a `console.warn` with the raw error so the real code is never lost.
+Maps Firebase auth error codes to human messages (`auth/invalid-credential` → "Invalid email or password.", …). Login/Signup render these strings directly; unknown codes fall through to a generic message.
 
 ---
 

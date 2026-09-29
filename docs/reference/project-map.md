@@ -93,7 +93,7 @@ ai-resume-evaluation/
     ├── wrangler.toml · wrangler.hr-api.toml · deploy.js · README.md
 ```
 
-**Counts:** ~145 source files under `src/` · 12 test files (114 tests) · 1 legacy Cloud Functions module (5 endpoints) · 2 Cloudflare Workers (AI proxy + HR API).
+**Counts:** ~145 source files under `src/` · 12 test files (111 tests) · 1 legacy Cloud Functions module (5 endpoints) · 2 Cloudflare Workers (AI proxy + HR API).
 
 ---
 

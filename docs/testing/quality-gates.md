@@ -6,7 +6,7 @@ Four gates must pass before any change is "done":
 
 ## 1. Tests — `npm test`
 
-114 Vitest tests across 12 files (see [Test Suites](./test-suites.md)). A new pure function without a test is an unfinished change.
+111 Vitest tests across 12 files (see [Test Suites](./test-suites.md)). A new pure function without a test is an unfinished change.
 
 ## 2. Lint — `npm run lint`
 
@@ -27,7 +27,7 @@ The rolldown-based Vite build does more than bundle:
 ## What "green" means
 
 ```
-npm test        → 114 passed (12 files)
+npm test        → 111 passed (12 files)
 npm run lint    → 0 errors
 npm run test:ui → 135 files audited, 0 violations
 npm run build   → dist/ built, worker asset patched, no service worker

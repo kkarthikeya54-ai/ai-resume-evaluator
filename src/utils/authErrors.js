@@ -15,13 +15,6 @@ const AUTH_ERROR_MESSAGES = {
   "auth/redirect-cancelled-by-user": "Google sign-in was cancelled.",
   "auth/account-exists-with-different-credential":
     "An account already exists with this email. Sign in with your original provider.",
-  // Server/config-side failures — the user's browser isn't at fault.
-  "auth/unauthorized-domain":
-    "Google sign-in isn't set up for this domain. Ask the site owner to add it in Firebase Authentication → Settings → Authorized domains.",
-  "auth/if-invalid-origin":
-    "Google sign-in couldn't verify this page's origin. Ask the site owner to add this domain in Firebase Authentication → Settings → Authorized domains.",
-  "auth/network-request-failed":
-    "A network error interrupted sign-in. Check your connection and try again.",
 };
 
 // Google sign-in (popup) relays credentials through a cross-origin Firebase
@@ -54,7 +47,5 @@ export function getGoogleAuthErrorMessage(err) {
   if (known) return known;
   // Partitioned/blocked third-party storage fails the popup handshake with
   // no specific Firebase code — exactly the "bounced back instantly" case.
-  // Log the raw error so an unrecognized code is still diagnosable.
-  console.warn("[Auth] Google sign-in failed with unrecognized code:", err);
   return "Google sign-in failed." + PRIVACY_HINT;
 }

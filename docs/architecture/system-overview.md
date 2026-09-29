@@ -42,7 +42,7 @@ Browser (React SPA)                          Cloud
 | Persistence | IndexedDB (3 DBs), localStorage, sessionStorage, optional Supabase Storage | See [Data Flow](./data-flow.md) |
 | Auth | Firebase Auth | Email/password, Google popup, email verification |
 | Cloud | Cloudflare Workers (AI proxy + HR KV), Firestore, Supabase Storage · Functions v2 (legacy) | See [Backend](../backend/README.md) |
-| Quality | Vitest (114), oxlint, UI contrast audit | See [Testing](../testing/README.md) |
+| Quality | Vitest (111), oxlint, UI contrast audit | See [Testing](../testing/README.md) |
 
 ## The two user flows (condensed)
 
