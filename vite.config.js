@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { VitePWA } from "vite-plugin-pwa";
 import { createRequire } from "node:module";
 import { readFileSync } from "node:fs";
 
@@ -121,30 +120,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
     pdfjsWorkerPolyfill(),
-    VitePWA({
-      registerType: "autoUpdate",
-      injectRegister: "auto",
-      includeAssets: ["favicon.svg"],
-      manifest: {
-        name: "HireTire — Placement Readiness & Recruiter Intelligence",
-        short_name: "HireTire",
-        description:
-          "A web-based AI system that parses resumes, extracts skills and experience, compares them with job requirements, and ranks candidates automatically.",
-        start_url: "/",
-        scope: "/",
-        display: "standalone",
-        background_color: "#F7FAFF",
-        theme_color: "#F7FAFF",
-        icons: [{ src: "/favicon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" }],
-      },
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,woff2}"],
-        navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/__\//, /^\/api\//],
-        cleanupOutdatedCaches: true,
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-      },
-      devOptions: { enabled: true },
-    }),
   ],
 });
