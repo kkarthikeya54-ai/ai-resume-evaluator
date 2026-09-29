@@ -124,14 +124,31 @@ export async function getResume(uid) {
 export async function removeResume(uid) {
   if (!uid) return;
   const metadata = readMetadata();
-  const removed = metadata.filter((item) => item.id.startsWith(uid));
   const remaining = metadata.filter((item) => !item.id.startsWith(uid));
 
+  // Delete from the cloud first: list every object in the user's folder and
+  // remove it. Listing by prefix — not by the localStorage metadata — catches
+  // orphaned files too (an upload whose metadata write failed, files uploaded
+  // from another device, etc.), so a full wipe always empties the folder.
   if (supabase) {
-    for (const item of removed) {
-      if (item.id) {
-        await supabase.storage.from(BUCKET).remove([item.id]).catch(() => {});
+    try {
+      const BATCH = 100;
+      for (let offset = 0; ; offset += BATCH) {
+        const { data: files, error } = await supabase.storage
+          .from(BUCKET)
+          .list(uid, { limit: BATCH, offset });
+        if (error) throw error;
+        const list = files || [];
+        if (list.length > 0) {
+          await supabase.storage
+            .from(BUCKET)
+            .remove(list.map((file) => `${uid}/${file.name}`))
+            .catch(() => {});
+        }
+        if (list.length < BATCH) break;
       }
+    } catch {
+      // Folder missing or listing not permitted — fall through to local cleanup.
     }
   }
 

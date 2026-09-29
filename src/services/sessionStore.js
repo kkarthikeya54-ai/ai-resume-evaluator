@@ -50,7 +50,9 @@ function transaction(mode, fn) {
           reject(err);
           return;
         }
-        if (request) {
+        if (request && !request.onsuccess) {
+          // Only attach a default handler when the caller didn't wire its own
+          // (deleteSessionsForUser deletes records inside getAll.onsuccess).
           request.onsuccess = () => {
             result = request.result;
           };

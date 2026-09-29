@@ -91,6 +91,7 @@ export default function Account() {
   const isHr = role === ROLES.HR;
   const nextRole = isHr ? ROLES.STUDENT : ROLES.HR;
   const nextLabel = isHr ? "Student" : "Hiring";
+  const currentLabel = isHr ? "Hiring" : "Student";
 
   const confirmTrapRef = useFocusTrap(confirmOpen, () => setConfirmOpen(false));
   const deleteTrapRef = useFocusTrap(deleteModalOpen, () => setDeleteModalOpen(false));
@@ -704,6 +705,9 @@ export default function Account() {
             </div>
             <p className="text-xs font-semibold text-[var(--theme-text-muted)] leading-relaxed">
               Switching will change your default active dashboard and workspace rules to <span className="font-extrabold text-[var(--theme-text)]">{nextLabel}</span> mode.
+            </p>
+            <p className="text-xs font-semibold text-red-600/90 leading-relaxed">
+              Your current {currentLabel.toLowerCase()} data — uploaded resumes, saved sessions, and hiring records — will be permanently removed so every demo starts clean.
             </p>
             <div className="flex justify-end gap-3 pt-2">
               <button
