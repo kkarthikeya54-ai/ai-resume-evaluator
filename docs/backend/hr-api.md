@@ -26,7 +26,7 @@ hr:session:<uid>:<sessionId>     → single session record
 ```
 
 - Every KV write carries `expirationTtl` = **1 year of inactivity** (each upsert refreshes it).
-- KV's value cap is 25 MiB; the worker rejects bodies above **24 MiB** (sessions embed base64 resume bytes at ~50 KB–2 MB each, well within it).
+- KV's value cap is 25 MiB. `MAX_BODY_BYTES = 24 MiB` is **defined** in the worker but not currently enforced; instead the *client* strips raw file bytes before mirroring (`slimPayloadForCloud` drops `fileData[].bytes` and blob `url`), so sessions stay small (metadata + scores only) and the 25 MiB cap is never approached.
 - `payload.candidates[].status` values are normalized to the allowed set (`screened`, `shortlisted`, `interviewing`, `hired`) on write — same validation the functions did.
 
 ## Auth

@@ -4,7 +4,7 @@ A free Cloudflare Worker that fronts the AI providers for the whole app.
 It keeps API keys server-side and runs a **two-provider fallback chain**:
 
 1. **Gemini** (`GEMINI_API_KEY`, model `gemini-3.8-flash`) — default, tried first
-2. **NVIDIA NIM** (`NVIDIA_API_KEY`, model `meta/llama-3.2-11b-vision-instruct`) — automatic fallback
+2. **NVIDIA NIM** (`NVIDIA_API_KEY`) — automatic fallback via a **walk list** tried in order: `mistralai/mistral-nemotron` → `openai/gpt-oss-20b` → `meta/llama-3.2-90b-vision-instruct` (NIM retires models over time, so the worker skips any that return 410/404)
 
 If the first provider returns a quota/rate-limit error (429), a server
 error (5xx), or an empty/blocked response, the worker transparently

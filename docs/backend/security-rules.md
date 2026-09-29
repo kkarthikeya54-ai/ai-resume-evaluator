@@ -30,11 +30,15 @@ match /resumes/{userId}/{allPaths=**} {
 
 Resume files are namespaced per user; no other principal can reach them.
 
+> ℹ️ **The active resume-file path is Supabase Storage** when configured (`VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`): `resumes/{uid}/…` in the public `resumes` bucket, with deletion via list+delete of the user's prefix. These rules above protect the **legacy Firebase Storage** route (`cloudResumeStorage.js`, now dead code) and remain the reference for owner-scoped shapes.
+
 ## The authorization model, end-to-end
 
 | Path | Protection |
 | --- | --- |
-| Client → Firestore/Storage directly | Security rules (owner-only, above) |
+| Client → Firestore | Security rules (owner-only, above) |
+| Client → Firebase Storage (legacy) | Security rules (owner-only, above) |
+| Client → Supabase Storage | Bucket-level: public read for rendering, `resumes/{uid}/` path scoping + app-side ownership checks; the anon key is publishable by design |
 | Client → Cloud Functions (legacy) | `verifyIdToken` on every request + per-uid data access inside the handler (a caller can only ever touch `resource.data.uid == uid`) |
 | Client → HR API Worker | Firebase ID token verified server-side (Identity Toolkit `accounts:lookup`); all KV keys are prefixed with the verified uid, so cross-user access is impossible by construction |
 | Client → AI proxy | No user auth by design (prompt-only contract); upstream protected by slots/rate limits; the key never leaves the server |

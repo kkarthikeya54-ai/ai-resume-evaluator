@@ -9,9 +9,9 @@ The Cloudflare Worker AI proxy — the default `VITE_AI_PROXY_URL` target. Free 
 | Order | Provider | Secret | Model |
 | --- | --- | --- | --- |
 | 1 (default) | Google Gemini | `GEMINI_API_KEY` | `gemini-3.8-flash` |
-| 2 (fallback) | NVIDIA NIM | `NVIDIA_API_KEY` | `meta/llama-3.2-11b-vision-instruct` |
+| 2 (fallback) | NVIDIA NIM | `NVIDIA_API_KEY` | **walk list**, tried in order: `mistralai/mistral-nemotron` → `openai/gpt-oss-20b` → `meta/llama-3.2-90b-vision-instruct` |
 
-Failover is **transparent**: if the active provider returns a 429 (quota/rate limit), a 5xx, or empty/blocked content, the worker retries with the next provider and returns the same response shape. The response's `provider` field reveals which one served the request.
+Failover is **transparent**: if the active provider returns a 429 (quota/rate limit), a 5xx, or empty/blocked content, the worker retries with the next provider and returns the same response shape. The response's `provider` field reveals which one served the request. The NVIDIA leg walks its model list because NIM retires models over time — `410`/`404` model endpoints are skipped instantly (llama-3.x hit EOL 2026-08-26).
 
 ## Contract
 
@@ -20,6 +20,7 @@ POST /  { prompt: string, json?: boolean, provider?: "nvidia" | "gemini" }
    │
    ▼  tries the chain in order, injecting keys server-side
 { result: <parsed JSON> | <raw string>, provider: "gemini" | "nvidia" }
+GET /models   → lists the provider chain in effect (undocumented helper)
 ```
 
 - `json: true` (default): strict `JSON.parse` → markdown-fence salvage → raw string fallback.
@@ -28,6 +29,7 @@ POST /  { prompt: string, json?: boolean, provider?: "nvidia" | "gemini" }
 - Errors: `429` when **every** provider failed with quota-type errors (so the client's existing backoff runs), `502` otherwise — body carries each provider's joined reason.
 - Missing key: that provider is dropped from the chain without a network call.
 - CORS: `POST, OPTIONS` + `Content-Type` preflight.
+- `GET /models` (no auth): a small helper that echoes the configured chain (used for smoke-testing the deploy).
 
 ## Secret handling
 
