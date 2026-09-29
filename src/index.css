@@ -93,7 +93,14 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Scroll-behavior is intentionally left at the default `auto` here.
+     CSS-driven smooth scrolling makes the browser *animate* scroll-anchor
+     corrections while live DOM updates happen (HR analysis polling,
+     blob previews, session reloads), which showed up as an up-and-down
+     bounce/flicker when scrolling the dashboards. Explicit JS smooth
+     scrolls (window.scrollTo({ behavior: "smooth" })) still animate —
+     they pass the behavior directly — and the landing drives its own
+     scroll (see landing.css). */
   /* Fluid scale system — the app-wide equivalent of the landing's
      --u/--us units. Tailwind sizes everything in rem, so scaling the
      root font-size with the viewport makes every page (student and HR
