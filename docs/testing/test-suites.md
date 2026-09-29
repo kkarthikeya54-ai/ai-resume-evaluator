@@ -2,7 +2,7 @@
 
 > 🧪 Testing · Next: [Quality Gates](./quality-gates.md)
 
-Run with `npm test` (= `vitest run`). Colocated in `__tests__/` folders. **111 tests across 12 files, all green** (run ≈ 1.5 s).
+Run with `npm test` (= `vitest run`). Colocated in `__tests__/` folders. **114 tests across 12 files, all green** (run ≈ 1.5 s).
 
 ## The suites
 

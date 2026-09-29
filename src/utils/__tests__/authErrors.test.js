@@ -29,6 +29,25 @@ describe("getGoogleAuthErrorMessage", () => {
     expect(msg).not.toContain("shield");
   });
 
+  it("points at authorized domains instead of browser privacy when the domain isn't allowed", () => {
+    const msg = getGoogleAuthErrorMessage({ code: "auth/unauthorized-domain" });
+    expect(msg).toContain("Authorized domains");
+    expect(msg).not.toContain("shield");
+    expect(msg).not.toContain("ad blocker");
+  });
+
+  it("points at authorized domains for origin-mismatch failures", () => {
+    const msg = getGoogleAuthErrorMessage({ code: "auth/if-invalid-origin" });
+    expect(msg).toContain("Authorized domains");
+    expect(msg).not.toContain("shield");
+  });
+
+  it("mentions the network for auth/network-request-failed", () => {
+    const msg = getGoogleAuthErrorMessage({ code: "auth/network-request-failed" });
+    expect(msg).toContain("network");
+    expect(msg).not.toContain("shield");
+  });
+
   it("explains the browser-privacy workaround for unknown codes (partitioned storage failures)", () => {
     const msg = getGoogleAuthErrorMessage({ code: "" });
     expect(msg).toContain("cross-site cookies");
