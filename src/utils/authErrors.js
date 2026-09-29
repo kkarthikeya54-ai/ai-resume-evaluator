@@ -9,6 +9,7 @@ const AUTH_ERROR_MESSAGES = {
   "auth/weak-password": "Password is too weak. Use at least 6 characters.",
   "auth/operation-not-allowed": "This sign-in method is not enabled.",
   "auth/popup-closed-by-user": "Google sign-in was cancelled.",
+  "auth/redirect-cancelled-by-user": "Google sign-in was cancelled.",
   "auth/account-exists-with-different-credential":
     "An account already exists with this email. Sign in with your original provider.",
 };

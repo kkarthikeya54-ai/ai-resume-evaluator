@@ -8,6 +8,8 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
 } from "firebase/auth";
 import { auth, isConfigured } from "../config/firebase";
 
@@ -47,8 +49,46 @@ export async function logIn(email, password) {
 
 export async function logInWithGoogle() {
   const fbAuth = requireAuth();
-  const credential = await signInWithPopup(fbAuth, googleProvider);
-  return credential.user;
+  try {
+    const credential = await signInWithPopup(fbAuth, googleProvider);
+    return credential.user;
+  } catch (err) {
+    const code = err?.code || "";
+    // Truly user-initiated cancellations should surface as-is.
+    if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+      throw err;
+    }
+    // The popup flow relays the sign-in through the Firebase auth iframe
+    // (firebaseapp.com/__/auth/iframe). Under strict privacy settings
+    // (Firefox dynamic state partitioning, Safari ITP) that iframe runs in a
+    // third-party context with partitioned storage, so the handshake breaks
+    // and the popup fails. The redirect flow is a full top-level navigation
+    // and does not depend on third-party cookies, so fall back to it.
+    //
+    // Returns null because the page navigates away; the session is finalized
+    // by AuthContext via finishRedirectLogin() when the user lands back.
+    await signInWithRedirect(fbAuth, googleProvider);
+    return null;
+  }
+}
+
+/**
+ * Finalizes a Google redirect sign-in on boot. Call once at app start:
+ * resolves any pending getRedirectResult, clears Firebase's pending-redirect
+ * state (so it can't re-apply on every load), and propagates the user via the
+ * onAuthStateChanged session callback. Never throws.
+ */
+export async function finishRedirectLogin() {
+  if (!isConfigured || !auth) return null;
+  try {
+    const credential = await getRedirectResult(auth);
+    if (credential && credential.user) return credential.user;
+  } catch (err) {
+    // e.g. auth/account-exists-with-different-credential — the session
+    // callback stays signed out and the UI can explain; boot must not fail.
+    console.warn("[Auth] Redirect sign-in did not complete:", err?.code || err?.message);
+  }
+  return null;
 }
 
 export async function logOut() {

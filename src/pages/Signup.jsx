@@ -61,7 +61,9 @@ export default function Signup() {
     setError(null);
     try {
       const authUser = await logInWithGoogle();
-      goAfterAuth(authUser);
+      // Null means a redirect was initiated (privacy-blocked popup): the
+      // page is navigating to Google and the session resumes on return.
+      if (authUser) goAfterAuth(authUser);
     } catch (err) {
       setError(getAuthErrorMessage(err.code));
     } finally {

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { subscribeToAuth, logOut as signOut } from "../services/auth";
+import { subscribeToAuth, logOut as signOut, finishRedirectLogin } from "../services/auth";
 import { getRole, setRole as persistRole } from "../services/role";
 import { wipeUserData } from "../services/dataWipe";
 import { isConfigured } from "../config/firebase";
@@ -48,6 +48,14 @@ export function AuthProvider({ children }) {
       }
     });
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    // Finalize any Google redirect sign-in that bounced back from the IdP.
+    // The onAuthStateChanged subscription (above) reports the signed-in user;
+    // this also clears Firebase's pending-redirect state so it cannot re-apply
+    // on every future load. Safe to run even when nothing is pending.
+    finishRedirectLogin();
   }, []);
 
   useEffect(() => {
