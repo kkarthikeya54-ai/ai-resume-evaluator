@@ -24,18 +24,19 @@ npm run dev             # → http://localhost:5173
 | --- | --- |
 | `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID` | Auth, profiles, cloud sync |
 | `VITE_AI_PROXY_URL` | AI features (Worker or Function URL) |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Optional — cloud resume file storage (Supabase, bucket `resumes`); without them resume storage stays local |
 | `VITE_FUNCTIONS_BASE_URL` | *(legacy — no longer read; HR cloud sync uses the HR API Worker with a hard-coded URL)* |
 
-Full details incl. server-side secrets: [Operations → Configuration](../operations/configuration.md).
+Full details incl. server-side secrets: [Operations → Configuration](../operations/configuration.md). Step-by-step setup: [🧰 Tutorials](../tutorials/README.md).
 
 ## Scripts
 
 | Script | Command | What it does |
 | --- | --- | --- |
 | `dev` | `vite` | Dev server + HMR on :5173 |
-| `build` | `vite build` | Production bundle → `dist/` (PWA precache generated) |
+| `build` | `vite build` | Production bundle → `dist/` |
 | `lint` | `oxlint` | Lint everything (gate: 0 errors) |
-| `test` | `vitest run` | Unit tests (63) |
+| `test` | `vitest run` | Unit tests (111) |
 | `preview` | `vite preview` | Serve the built `dist/` locally |
 
 ## The dev loop used in this project
@@ -61,4 +62,4 @@ See [Testing → Verification workflow](../testing/verification.md) for the full
 
 ---
 
-**Related pages:** [Product Overview](./product-overview.md) · [Glossary](./glossary.md) · [Operations](../operations/README.md) · [Testing](../testing/README.md)
+**Related pages:** [Product Overview](./product-overview.md) · [Glossary](./glossary.md) · [🧰 Tutorials](../tutorials/README.md) · [Operations](../operations/README.md) · [Testing](../testing/README.md)

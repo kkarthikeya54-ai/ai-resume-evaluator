@@ -10,4 +10,4 @@ Shipping and running the system: configuration, deployment, and what to do when 
 | **[Launch-Day Checklist](./launch-checklist.md)** | The exact Firebase + Cloudflare console steps for go-live, in order — providers, authorized domains, secrets, post-deploy verification |
 | **[Troubleshooting](./troubleshooting.md)** | Known failure signatures and their fixes |
 
-**Related sections:** [Backend](../backend/README.md) (what you're deploying) · [Testing → Quality Gates](../testing/quality-gates.md) (pre-deploy checks).
+**Related sections:** [Backend](../backend/README.md) (what you're deploying) · [Testing → Quality Gates](../testing/quality-gates.md) (pre-deploy checks) · [🧰 Tutorials](../tutorials/README.md) (setup walkthroughs).

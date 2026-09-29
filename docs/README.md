@@ -21,6 +21,7 @@ Every section is a folder. Start with **Getting Started**, then follow your role
 | **[🔐 Data & Privacy](./data-and-privacy/)** | Data inventory, deletion paths | You care about compliance |
 | **[🧪 Testing](./testing/)** | Test suites, quality gates | You're verifying changes |
 | **[🛠️ Operations](./operations/)** | Configuration, deployment, troubleshooting | You're shipping |
+| **[🧰 Tutorials](./tutorials/)** | Step-by-step setup: Firebase, API keys, wiring the APIs | You're configuring the app for the first time |
 | **[📖 Reference](./reference/)** | Tech stack, full file map | You want lookup tables |
 
 ## 🧭 Learning paths
@@ -35,17 +36,19 @@ Every section is a folder. Start with **Getting Started**, then follow your role
 
 **AI features:** [Prompt Catalog](ai-pipeline/prompt-catalog.md) → [Reliability](ai-pipeline/reliability.md) → [Ranking Math](ai-pipeline/ranking-math.md)
 
+**Configure everything:** [Tutorials → Firebase Setup](tutorials/firebase-setup.md) → [Get the API Keys](tutorials/get-api-keys.md) → [Configure the APIs](tutorials/configure-apis.md)
+
 ---
 
 ## Quick facts
 
-- **App type:** SPA + PWA (installable, offline shell)
+- **App type:** Single-page React app (no PWA / no service worker)
 - **Frontend:** React 19 · Vite 8 · Tailwind CSS 4
 - **Auth:** Firebase (email/password + Google)
-- **Cloud:** Cloudflare Workers (AI proxy + HR API w/ KV) · Firestore · Storage · (legacy) Cloud Functions
+- **Cloud:** Cloudflare Workers (AI proxy + HR API w/ KV) · Firebase Auth + Firestore · Supabase Storage · (legacy) Cloud Functions
 - **AI:** LLM proxied server-side — the key **never ships in the browser bundle**
 - **Local-first:** resumes, sessions, and results live in the browser by default
-- **Quality:** Vitest (108 tests) · oxlint (0 errors) · UI contrast audit · PWA build
+- **Quality:** Vitest (111 tests) · oxlint (0 errors) · UI contrast audit · production build
 
 ![Architecture & data flow](./architecture.svg)
 
@@ -55,9 +58,9 @@ Every section is a folder. Start with **Getting Started**, then follow your role
 npm install
 cp .env.example .env        # fill in values (names in Operations → Configuration)
 npm run dev                 # vite dev server on :5173
-npm test                    # vitest (108 tests)
+npm test                    # vitest (111 tests)
 npm run lint                # oxlint
-npm run test:ui             # static UI contrast/hover audit (134 files)
+npm run test:ui             # static UI contrast/hover audit (135 files)
 npm run build               # production build → dist/
 ```
 
