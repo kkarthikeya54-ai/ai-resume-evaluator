@@ -4,7 +4,7 @@ import { signUp, logInWithGoogle } from "../services/auth";
 import { getRole, getRoleRedirect } from "../services/role";
 import FormField from "../components/FormField";
 import Logo from "../components/Logo";
-import { getAuthErrorMessage } from "../utils/authErrors";
+import { getAuthErrorMessage, getGoogleAuthErrorMessage } from "../utils/authErrors";
 import { useAuth } from "../context/AuthContext";
 export default function Signup() {
   const { user, role } = useAuth();
@@ -61,11 +61,9 @@ export default function Signup() {
     setError(null);
     try {
       const authUser = await logInWithGoogle();
-      // Null means a redirect was initiated (privacy-blocked popup): the
-      // page is navigating to Google and the session resumes on return.
-      if (authUser) goAfterAuth(authUser);
+      goAfterAuth(authUser);
     } catch (err) {
-      setError(getAuthErrorMessage(err.code));
+      setError(getGoogleAuthErrorMessage(err));
     } finally {
       setLoading(false);
     }
