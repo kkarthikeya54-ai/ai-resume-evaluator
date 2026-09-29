@@ -8,7 +8,8 @@
 2. **Job rules + keywords** (HR) — same prompt path.
 3. **Profile metadata** you explicitly enter (name, phone, links, academic/HR details) → Firestore `users/{uid}`.
 4. **Auth tokens** → Firebase.
-5. **Nothing else.** Files, scores, sessions, shortlists, and chat history live locally unless cloud sync is enabled (`functionsEnabled()`). When it is, the HR session mirror (including embedded resume bytes) goes to the HR API Worker's Workers KV — token-verified and uid-scoped (see [Data Inventory](./data-inventory.md)).
+5. **Resume files** → only if you configured Supabase (`VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`); they upload to the `resumes` bucket.
+6. **Nothing else.** Files, scores, sessions, shortlists, and chat history live locally unless cloud sync is enabled (`functionsEnabled()`). When it is, the HR session mirror goes to the HR API Worker's Workers KV — token-verified, uid-scoped, and with **raw file bytes stripped client-side** (`slimPayloadForCloud` drops `fileData[].bytes` + blob URLs) so the cloud copy carries structured data only (see [Data Inventory](./data-inventory.md)).
 
 This list *is* the disclosure that the Privacy Policy page describes; keep the two in sync when the AI path changes.
 
@@ -16,18 +17,18 @@ This list *is* the disclosure that the Privacy Policy page describes; keep the t
 
 | Secret | Lives in | Never appears in |
 | --- | --- | --- |
-| LLM API key (`NVIDIA_API_KEY`) | Cloudflare Worker secrets / Cloud Function secret manager | Client bundle, repo files, `.env` |
+| LLM API keys (`GEMINI_API_KEY`, `NVIDIA_API_KEY`) | Cloudflare Worker secrets (`wrangler secret put`) | Client bundle, repo files, `.env` |
+| `FIREBASE_WEB_API_KEY` | HR API Worker secret | Client bundle (the client talks to the worker, not to this key) |
 | Firebase web config | `.env` (public by design) | — (web keys are identifier keys; real protection is the security rules) |
+| Supabase URL + anon key | `.env` (publishable by design) | — (bucket access policy is the real protection) |
 | Function authorization | Firebase ID tokens, verified per request | — |
-
-> ⚠️ `worker/README.md` currently contains a pasted example `nvapi-…` key in its setup instructions — prune it before any public release.
 
 ## Deletion paths
 
 | Action | What it wipes | Code path |
 | --- | --- | --- |
-| Role switch (Account) | Resume text + metadata, all sessions, HR store, candidate cache, AI cache | `AuthContext.switchRole` → `dataWipe.wipeUserData` |
-| Delete resume (AppPage) | Resume text + AI cache | `removeResume` + `clearGeminiCache` |
+| Role switch (Account) | Supabase `resumes/{uid}/` folder (if cloud), resume text + metadata, all sessions, HR store, candidate cache, AI cache, worker-KV mirror | `AuthContext.switchRole` → `dataWipe.wipeUserData` (incl. `POST /account/delete`) |
+| Delete resume (AppPage) | Resume file (Supabase or local) + metadata + AI cache | `removeResume` + `clearGeminiCache` |
 | Delete session (SessionsPage) | One IndexedDB session | `sessionStore.deleteSession` |
 | Clear results (HrDashboard) | Current session payload + candidate cache | `putSession(payload:{})` + `clearCandidates` |
 | Delete account | Cloud KV sessions (via the HR API Worker) + all local stores, then sign-out | `hrBackend.deleteUserAccount` → `POST /account/delete` on the worker, then `dataWipe.wipeUserData` + `logout`. *(Legacy Cloud Functions also deleted the Firestore doc + Auth record via the Admin SDK; the worker cannot, so the Auth record currently survives account deletion — known gap.)* |
