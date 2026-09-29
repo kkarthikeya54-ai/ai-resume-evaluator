@@ -34,7 +34,7 @@ Contract everywhere: **`loading && !data → skeleton`** — cached results neve
 
 ## Concurrency reality
 
-Ten sections fire simultaneously into a **2-slot** proxy queue — the first two call out, the rest queue FIFO. Combined with dedupe, this is why a "Run All" burst stays within free-tier limits. Roughly: sections resolve in waves of 2.
+Ten sections fire simultaneously into a **4-slot** proxy queue (the default; 1–8 via `VITE_AI_CONCURRENCY`) — the first four call out, the rest queue FIFO. Combined with dedupe, this is why a "Run All" burst stays within free-tier limits. Roughly: sections resolve in waves of 4.
 
 ## Client-side derived logic
 

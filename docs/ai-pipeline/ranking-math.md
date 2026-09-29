@@ -13,7 +13,7 @@ expandKeywords  1 AI call — originals preserved + synonyms, ≤60, deduped
    ▼
 chunk           files → batches of 3 (BATCH_SIZE)
    ▼
-pool            runWithConcurrency(batches, 2, worker, onItem, signal)
+pool            runWithConcurrency(batches, 6, worker, onItem, signal)
   worker(batch):
     ① extract    extractText × batch in parallel (null → candidate fails)
     ② truncate   8,000 chars each
@@ -43,10 +43,10 @@ total = 0.25·skills + 0.25·experience + 0.15·education
 
 The AI's holistic `overall` rating is kept and displayed but **ranking uses the transparent weighted total** — a deliberate product choice: every dimension that produced a rank is a visible column in the table, so recruiters can audit the ordering.
 
-## Why batch size 3, concurrency 2
+## Why batch size 3, concurrency 6
 
 - **3**: small enough that one weak candidate doesn't drown others in a shared prompt; large enough to cut LLM calls by 3×. The response is keyed per candidate, so partial parse failures degrade per-candidate.
-- **2**: matches the gateway's global proxy slot count — the pipeline and student dashboard can't stampede the proxy.
+- **6**: `CONCURRENCY` (default 6, `VITE_HR_CONCURRENCY`) is the HR pipeline's *own* worker pool — independent of the student dashboard's 4-slot AI gateway queue. 6 is a deliberate overhang for a local-first app: 6 parallel batches × 3 candidates each keeps plenty of headroom before free-tier proxy limits bite, and the pool is fully cooperative with `signal.cancelled`.
 
 ## The fallback evaluator
 

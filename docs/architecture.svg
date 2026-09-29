@@ -1,135 +1,135 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
   <title>AI Resume Evaluation — architecture and data flow: local-first browser SPA, server-side AI proxy, owner-scoped cloud sync</title>
   <defs>
-    <marker id="m-coral" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#E85D3F"/></marker>
-    <marker id="m-coral-light" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#F0957F"/></marker>
-    <marker id="m-sage" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#7FA99B"/></marker>
+    <marker id="m-coral" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#1D6FF2"/></marker>
+    <marker id="m-coral-light" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#7FA3F0"/></marker>
+    <marker id="m-sage" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2563EB"/></marker>
     <marker id="m-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#FBBF24"/></marker>
   </defs>
 
-  <rect width="1200" height="640" fill="#0A1F1C"/>
-  <text x="600" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#FAF8F5">AI Resume Evaluation — Architecture &amp; Data Flow</text>
-  <text x="600" y="58" text-anchor="middle" font-size="12" fill="#9DB8AF">Local-first parsing in the browser · AI key stays server-side · optional owner-scoped cloud sync</text>
+  <rect width="1200" height="640" fill="#F7FAFF"/>
+  <text x="600" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#0B1F3A">AI Resume Evaluation — Architecture &amp; Data Flow</text>
+  <text x="600" y="58" text-anchor="middle" font-size="12" fill="#5A6C8C">Local-first parsing in the browser · AI key stays server-side · optional owner-scoped cloud sync</text>
 
   <!-- ══ Browser container ══ -->
-  <rect x="30" y="84" width="620" height="440" rx="14" fill="#0D2622" stroke="#2E4F45" stroke-width="1.5"/>
-  <text x="50" y="110" font-size="12" font-weight="700" fill="#7FA99B" letter-spacing="1">BROWSER — REACT SPA · LOCAL-FIRST</text>
+  <rect x="30" y="84" width="620" height="440" rx="14" fill="#FFFFFF" stroke="#C9D6EA" stroke-width="1.5"/>
+  <text x="50" y="110" font-size="12" font-weight="700" fill="#2563EB" letter-spacing="1">BROWSER — REACT SPA · LOCAL-FIRST</text>
 
   <!-- pages row -->
   <g>
-    <rect x="50" y="138" width="137" height="56" rx="10" fill="#0F2D27" stroke="#2E4F45"/>
-    <text x="61" y="160" font-size="12" font-weight="700" fill="#FAF8F5">Landing</text>
-    <text x="61" y="178" font-size="10" fill="#9DB8AF">WebGL 3D journey</text>
-    <rect x="195" y="138" width="137" height="56" rx="10" fill="#0F2D27" stroke="#2E4F45"/>
-    <text x="206" y="160" font-size="12" font-weight="700" fill="#FAF8F5">Login / Signup</text>
-    <text x="206" y="178" font-size="10" fill="#9DB8AF">Firebase Auth</text>
-    <rect x="340" y="138" width="137" height="56" rx="10" fill="#0F2D27" stroke="#2E4F45"/>
-    <text x="351" y="160" font-size="12" font-weight="700" fill="#FAF8F5">Student</text>
-    <text x="351" y="178" font-size="10" fill="#9DB8AF">/upload → /app</text>
-    <rect x="485" y="138" width="137" height="56" rx="10" fill="#0F2D27" stroke="#2E4F45"/>
-    <text x="496" y="160" font-size="12" font-weight="700" fill="#FAF8F5">HR</text>
-    <text x="496" y="178" font-size="10" fill="#9DB8AF">/hr → /candidate</text>
+    <rect x="50" y="138" width="137" height="56" rx="10" fill="#FFFFFF" stroke="#C9D6EA"/>
+    <text x="61" y="160" font-size="12" font-weight="700" fill="#0B1F3A">Landing</text>
+    <text x="61" y="178" font-size="10" fill="#5A6C8C">WebGL 3D journey</text>
+    <rect x="195" y="138" width="137" height="56" rx="10" fill="#FFFFFF" stroke="#C9D6EA"/>
+    <text x="206" y="160" font-size="12" font-weight="700" fill="#0B1F3A">Login / Signup</text>
+    <text x="206" y="178" font-size="10" fill="#5A6C8C">Firebase Auth</text>
+    <rect x="340" y="138" width="137" height="56" rx="10" fill="#FFFFFF" stroke="#C9D6EA"/>
+    <text x="351" y="160" font-size="12" font-weight="700" fill="#0B1F3A">Student</text>
+    <text x="351" y="178" font-size="10" fill="#5A6C8C">/upload → /app</text>
+    <rect x="485" y="138" width="137" height="56" rx="10" fill="#FFFFFF" stroke="#C9D6EA"/>
+    <text x="496" y="160" font-size="12" font-weight="700" fill="#0B1F3A">HR</text>
+    <text x="496" y="178" font-size="10" fill="#5A6C8C">/hr → /candidate</text>
   </g>
 
   <!-- auth context bar -->
-  <rect x="50" y="210" width="580" height="32" rx="8" fill="#123A31" stroke="#2E4F45"/>
-  <text x="60" y="230" font-size="11.5" fill="#FAF8F5">AuthContext — auth state · per-user role (localStorage) · stale-token refresh</text>
+  <rect x="50" y="210" width="580" height="32" rx="8" fill="#EFF4FF" stroke="#C9D6EA"/>
+  <text x="60" y="230" font-size="11.5" fill="#0B1F3A">AuthContext — auth state · per-user role (localStorage) · stale-token refresh</text>
 
   <!-- parsing + gateway -->
-  <rect x="50" y="262" width="282" height="58" rx="10" fill="#0F2D27" stroke="#2E4F45"/>
-  <text x="62" y="284" font-size="12" font-weight="700" fill="#FAF8F5">fileParser</text>
-  <text x="62" y="300" font-size="9.5" fill="#9DB8AF">pdf.js · mammoth · tesseract OCR</text>
-  <text x="62" y="313" font-size="9.5" fill="#9DB8AF">on-device: PDF · DOCX · text · image</text>
+  <rect x="50" y="262" width="282" height="58" rx="10" fill="#FFFFFF" stroke="#C9D6EA"/>
+  <text x="62" y="284" font-size="12" font-weight="700" fill="#0B1F3A">fileParser</text>
+  <text x="62" y="300" font-size="9.5" fill="#5A6C8C">pdf.js · mammoth · tesseract OCR</text>
+  <text x="62" y="313" font-size="9.5" fill="#5A6C8C">on-device: PDF · DOCX · text · image</text>
 
-  <rect x="356" y="262" width="274" height="58" rx="10" fill="#0F2D27" stroke="#E85D3F" stroke-width="1.2"/>
-  <text x="368" y="284" font-size="12" font-weight="700" fill="#FAF8F5">gemini.js — AI gateway</text>
-  <text x="368" y="300" font-size="9.5" fill="#9DB8AF">24 h cache · dedupe · 2 slots</text>
-  <text x="368" y="313" font-size="9.5" fill="#9DB8AF">exp. backoff · JSON repair</text>
+  <rect x="356" y="262" width="274" height="58" rx="10" fill="#FFFFFF" stroke="#1D6FF2" stroke-width="1.2"/>
+  <text x="368" y="284" font-size="12" font-weight="700" fill="#0B1F3A">gemini.js — AI gateway</text>
+  <text x="368" y="300" font-size="9.5" fill="#5A6C8C">24 h cache · dedupe · 4 slots</text>
+  <text x="368" y="313" font-size="9.5" fill="#5A6C8C">exp. backoff · JSON repair</text>
 
-  <line x1="332" y1="291" x2="350" y2="291" stroke="#7FA99B" stroke-width="1.5" marker-end="url(#m-sage)"/>
+  <line x1="332" y1="291" x2="350" y2="291" stroke="#2563EB" stroke-width="1.5" marker-end="url(#m-sage)"/>
 
   <!-- backend client + scoring -->
-  <rect x="50" y="338" width="282" height="58" rx="10" fill="#0F2D27" stroke="#2E4F45"/>
-  <text x="62" y="360" font-size="12" font-weight="700" fill="#FAF8F5">hrBackend</text>
-  <text x="62" y="376" font-size="9.5" fill="#9DB8AF">Bearer ID token on every call</text>
-  <text x="62" y="389" font-size="9.5" fill="#9DB8AF">local store is the source of truth</text>
+  <rect x="50" y="338" width="282" height="58" rx="10" fill="#FFFFFF" stroke="#C9D6EA"/>
+  <text x="62" y="360" font-size="12" font-weight="700" fill="#0B1F3A">hrBackend</text>
+  <text x="62" y="376" font-size="9.5" fill="#5A6C8C">Bearer ID token on every call</text>
+  <text x="62" y="389" font-size="9.5" fill="#5A6C8C">local store is the source of truth</text>
 
-  <rect x="356" y="338" width="274" height="58" rx="10" fill="#0F2D27" stroke="#2E4F45"/>
-  <text x="368" y="360" font-size="12" font-weight="700" fill="#FAF8F5">hrScoring — HR pipeline</text>
-  <text x="368" y="376" font-size="9.5" fill="#9DB8AF">batches of 3 · concurrency 2</text>
-  <text x="368" y="389" font-size="9.5" fill="#9DB8AF">weighted ranking · CSV export</text>
+  <rect x="356" y="338" width="274" height="58" rx="10" fill="#FFFFFF" stroke="#C9D6EA"/>
+  <text x="368" y="360" font-size="12" font-weight="700" fill="#0B1F3A">hrScoring — HR pipeline</text>
+  <text x="368" y="376" font-size="9.5" fill="#5A6C8C">batches of 3 · pool of 6</text>
+  <text x="368" y="389" font-size="9.5" fill="#5A6C8C">weighted ranking · CSV export</text>
 
   <!-- local storage strip -->
-  <rect x="50" y="414" width="580" height="66" rx="10" fill="#0A2620" stroke="#2E4F45"/>
-  <text x="60" y="432" font-size="10" font-weight="700" fill="#7FA99B" letter-spacing="0.5">LOCAL STORAGE — STAYS ON DEVICE</text>
-  <rect x="60" y="440" width="180" height="32" rx="6" fill="#0F2D27" stroke="#2E4F45"/>
-  <text x="70" y="454" font-size="10" font-weight="700" fill="#FAF8F5">IndexedDB</text>
-  <text x="70" y="467" font-size="8.5" fill="#9DB8AF">sessions · resume bytes</text>
-  <rect x="250" y="440" width="180" height="32" rx="6" fill="#0F2D27" stroke="#2E4F45"/>
-  <text x="260" y="454" font-size="10" font-weight="700" fill="#FAF8F5">localStorage</text>
-  <text x="260" y="467" font-size="8.5" fill="#9DB8AF">resume text · AI cache · role</text>
-  <rect x="440" y="440" width="180" height="32" rx="6" fill="#0F2D27" stroke="#2E4F45"/>
-  <text x="450" y="454" font-size="10" font-weight="700" fill="#FAF8F5">sessionStorage</text>
-  <text x="450" y="467" font-size="8.5" fill="#9DB8AF">candidate cache</text>
+  <rect x="50" y="414" width="580" height="66" rx="10" fill="#EFF4FF" stroke="#C9D6EA"/>
+  <text x="60" y="432" font-size="10" font-weight="700" fill="#2563EB" letter-spacing="0.5">LOCAL STORAGE — STAYS ON DEVICE</text>
+  <rect x="60" y="440" width="180" height="32" rx="6" fill="#FFFFFF" stroke="#C9D6EA"/>
+  <text x="70" y="454" font-size="10" font-weight="700" fill="#0B1F3A">IndexedDB</text>
+  <text x="70" y="467" font-size="8.5" fill="#5A6C8C">sessions · bytes · cache</text>
+  <rect x="250" y="440" width="180" height="32" rx="6" fill="#FFFFFF" stroke="#C9D6EA"/>
+  <text x="260" y="454" font-size="10" font-weight="700" fill="#0B1F3A">localStorage</text>
+  <text x="260" y="467" font-size="8.5" fill="#5A6C8C">resume text · AI cache · role</text>
+  <rect x="440" y="440" width="180" height="32" rx="6" fill="#FFFFFF" stroke="#C9D6EA"/>
+  <text x="450" y="454" font-size="10" font-weight="700" fill="#0B1F3A">sessionStorage</text>
+  <text x="450" y="467" font-size="8.5" fill="#5A6C8C">candidate cache</text>
 
   <!-- legend -->
-  <line x1="50" y1="504" x2="78" y2="504" stroke="#E85D3F" stroke-width="2"/>
-  <text x="84" y="508" font-size="9.5" fill="#C9D8D2">AI path (no key in client)</text>
-  <line x1="250" y1="504" x2="278" y2="504" stroke="#7FA99B" stroke-width="2"/>
-  <text x="284" y="508" font-size="9.5" fill="#C9D8D2">authenticated sync (Bearer token)</text>
-  <line x1="500" y1="504" x2="528" y2="504" stroke="#5B7A70" stroke-width="2"/>
-  <text x="534" y="508" font-size="9.5" fill="#C9D8D2">local data flow</text>
+  <line x1="50" y1="504" x2="78" y2="504" stroke="#1D6FF2" stroke-width="2"/>
+  <text x="84" y="508" font-size="9.5" fill="#5A6C8C">AI path (no key in client)</text>
+  <line x1="250" y1="504" x2="278" y2="504" stroke="#2563EB" stroke-width="2"/>
+  <text x="284" y="508" font-size="9.5" fill="#5A6C8C">authenticated sync (Bearer token)</text>
+  <line x1="500" y1="504" x2="528" y2="504" stroke="#8AA0C0" stroke-width="2"/>
+  <text x="534" y="508" font-size="9.5" fill="#5A6C8C">local data flow</text>
 
   <!-- ══ Cloud container ══ -->
-  <rect x="760" y="84" width="410" height="440" rx="14" fill="#0D2622" stroke="#2E4F45" stroke-width="1.5"/>
-  <text x="780" y="110" font-size="12" font-weight="700" fill="#7FA99B" letter-spacing="1">CLOUD — SERVER-SIDE ONLY</text>
+  <rect x="760" y="84" width="410" height="440" rx="14" fill="#FFFFFF" stroke="#C9D6EA" stroke-width="1.5"/>
+  <text x="780" y="110" font-size="12" font-weight="700" fill="#2563EB" letter-spacing="1">CLOUD — SERVER-SIDE ONLY</text>
 
   <!-- worker -->
-  <rect x="780" y="138" width="370" height="76" rx="10" fill="#0F2D27" stroke="#E85D3F" stroke-width="1.5"/>
-  <text x="792" y="160" font-size="12" font-weight="700" fill="#FAF8F5">Cloudflare Worker — AI proxy</text>
-  <text x="792" y="177" font-size="9.5" fill="#9DB8AF">injects the AI key from a server secret</text>
-  <text x="792" y="190" font-size="9.5" fill="#9DB8AF">POST { prompt, json } → { result }</text>
+  <rect x="780" y="138" width="370" height="76" rx="10" fill="#FFFFFF" stroke="#1D6FF2" stroke-width="1.5"/>
+  <text x="792" y="160" font-size="12" font-weight="700" fill="#0B1F3A">Cloudflare Worker — AI proxy</text>
+  <text x="792" y="177" font-size="9.5" fill="#5A6C8C">injects the AI key from a server secret</text>
+  <text x="792" y="190" font-size="9.5" fill="#5A6C8C">POST { prompt, json } → { result }</text>
 
   <!-- LLM -->
-  <rect x="850" y="238" width="230" height="44" rx="10" fill="#0F2D27" stroke="#FBBF24" stroke-dasharray="4 3"/>
-  <text x="965" y="256" text-anchor="middle" font-size="11.5" font-weight="700" fill="#FAF8F5">NVIDIA-hosted LLM</text>
-  <text x="965" y="272" text-anchor="middle" font-size="9" fill="#9DB8AF">key = server-side secret, never shipped</text>
+  <rect x="850" y="238" width="230" height="44" rx="10" fill="#FFFFFF" stroke="#FBBF24" stroke-dasharray="4 3"/>
+  <text x="965" y="256" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0B1F3A">Gemini → NVIDIA-hosted LLMs</text>
+  <text x="965" y="272" text-anchor="middle" font-size="9" fill="#5A6C8C">key = server-side secret, never shipped</text>
   <line x1="965" y1="214" x2="965" y2="232" stroke="#FBBF24" stroke-width="1.5" marker-end="url(#m-amber)"/>
 
   <!-- HR API worker (active) + legacy functions note -->
-  <rect x="780" y="306" width="370" height="104" rx="10" fill="#0F2D27" stroke="#7FA99B" stroke-width="1.5"/>
-  <text x="792" y="328" font-size="12" font-weight="700" fill="#FAF8F5">Cloudflare Worker — HR API (hr-api.js)</text>
-  <text x="792" y="346" font-size="9.5" fill="#9DB8AF">PUT /session/:id · PATCH /session/:id/candidate/:cid</text>
-  <text x="792" y="362" font-size="9.5" fill="#9DB8AF">GET /sessions · GET/DELETE /session/:id · POST /account/delete</text>
-  <text x="792" y="378" font-size="9.5" fill="#9DB8AF">ID token verified server-side · every KV key uid-scoped</text>
-  <text x="792" y="396" font-size="9" fill="#5F7A70">legacy: Cloud Functions (analyzeResume) — Blaze-gated, no longer deployed</text>
+  <rect x="780" y="306" width="370" height="104" rx="10" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.5"/>
+  <text x="792" y="328" font-size="12" font-weight="700" fill="#0B1F3A">Cloudflare Worker — HR API (hr-api.js)</text>
+  <text x="792" y="346" font-size="9.5" fill="#5A6C8C">PUT /session/:id · PATCH /session/:id/candidate/:cid</text>
+  <text x="792" y="362" font-size="9.5" fill="#5A6C8C">GET /sessions · GET/DELETE /session/:id · POST /account/delete</text>
+  <text x="792" y="378" font-size="9.5" fill="#5A6C8C">ID token verified server-side · every KV key uid-scoped</text>
+  <text x="792" y="396" font-size="9" fill="#6B7D9C">legacy: Cloud Functions (analyzeResume) — Blaze-gated, no longer deployed</text>
 
-  <!-- KV + firestore + storage -->
-  <rect x="780" y="436" width="178" height="64" rx="10" fill="#0F2D27" stroke="#2E4F45"/>
-  <text x="792" y="458" font-size="11" font-weight="700" fill="#FAF8F5">Workers KV + Firestore</text>
-  <text x="792" y="474" font-size="9" fill="#9DB8AF">hr:session:&lt;uid&gt;:&lt;id&gt;</text>
-  <text x="792" y="488" font-size="9" fill="#9DB8AF">users/{uid} · profiles</text>
-  <rect x="972" y="436" width="178" height="64" rx="10" fill="#0F2D27" stroke="#2E4F45"/>
-  <text x="984" y="458" font-size="11" font-weight="700" fill="#FAF8F5">Cloud Storage</text>
-  <text x="984" y="474" font-size="9" fill="#9DB8AF">resumes/{uid}/…</text>
-  <text x="984" y="488" font-size="9" fill="#9DB8AF">owner-only rules</text>
+  <!-- KV + firestore + supabase -->
+  <rect x="780" y="436" width="178" height="64" rx="10" fill="#FFFFFF" stroke="#C9D6EA"/>
+  <text x="792" y="458" font-size="11" font-weight="700" fill="#0B1F3A">Workers KV + Firestore</text>
+  <text x="792" y="474" font-size="9" fill="#5A6C8C">hr:session:&lt;uid&gt;:&lt;id&gt;</text>
+  <text x="792" y="488" font-size="9" fill="#5A6C8C">users/{uid} · profiles</text>
+  <rect x="972" y="436" width="178" height="64" rx="10" fill="#FFFFFF" stroke="#C9D6EA"/>
+  <text x="984" y="458" font-size="11" font-weight="700" fill="#0B1F3A">Supabase Storage</text>
+  <text x="984" y="474" font-size="9" fill="#5A6C8C">resumes/{uid}/… · public bucket</text>
+  <text x="984" y="488" font-size="9" fill="#5A6C8C">only when env-configured</text>
 
-  <line x1="869" y1="410" x2="869" y2="430" stroke="#7FA99B" stroke-width="1.5" marker-end="url(#m-sage)"/>
-  <line x1="1061" y1="410" x2="1061" y2="430" stroke="#7FA99B" stroke-width="1.5" marker-end="url(#m-sage)"/>
+  <line x1="869" y1="410" x2="869" y2="430" stroke="#2563EB" stroke-width="1.5" marker-end="url(#m-sage)"/>
+  <line x1="1061" y1="410" x2="1061" y2="430" stroke="#2563EB" stroke-width="1.5" marker-end="url(#m-sage)"/>
 
   <!-- ══ Crossing arrows ══ -->
   <!-- AI request -->
-  <path d="M630 278 H705 V170 H776" fill="none" stroke="#E85D3F" stroke-width="2" marker-end="url(#m-coral)"/>
-  <text x="741" y="160" text-anchor="middle" font-size="9.5" fill="#F0957F">POST { prompt }</text>
+  <path d="M630 278 H705 V170 H776" fill="none" stroke="#1D6FF2" stroke-width="2" marker-end="url(#m-coral)"/>
+  <text x="741" y="160" text-anchor="middle" font-size="9.5" fill="#7FA3F0">POST { prompt }</text>
   <!-- AI response -->
-  <path d="M780 196 H716 V300 H636" fill="none" stroke="#F0957F" stroke-width="2" marker-end="url(#m-coral-light)"/>
-  <text x="676" y="292" text-anchor="middle" font-size="9.5" fill="#F0957F">{ result: JSON }</text>
+  <path d="M780 196 H716 V300 H636" fill="none" stroke="#7FA3F0" stroke-width="2" marker-end="url(#m-coral-light)"/>
+  <text x="676" y="292" text-anchor="middle" font-size="9.5" fill="#7FA3F0">{ result: JSON }</text>
   <!-- authenticated sync -->
-  <path d="M630 362 H776" fill="none" stroke="#7FA99B" stroke-width="2" marker-end="url(#m-sage)"/>
-  <text x="700" y="352" text-anchor="middle" font-size="9.5" fill="#7FA99B">PUT / PATCH + Bearer ID token</text>
+  <path d="M630 362 H776" fill="none" stroke="#2563EB" stroke-width="2" marker-end="url(#m-sage)"/>
+  <text x="700" y="352" text-anchor="middle" font-size="9.5" fill="#2563EB">PUT / PATCH + Bearer ID token</text>
 
   <!-- ══ Privacy strip ══ -->
-  <rect x="30" y="548" width="1140" height="56" rx="12" fill="#0D2622" stroke="#2E4F45"/>
-  <text x="600" y="572" text-anchor="middle" font-size="11.5" fill="#FAF8F5">Privacy model — resume files are parsed on-device (pdf.js · mammoth · tesseract); files, scores and sessions stay in your browser.</text>
-  <text x="600" y="592" text-anchor="middle" font-size="10.5" fill="#9DB8AF">Only prompt text and profile metadata cross the network. The AI key lives in server-side secrets — never in the client bundle.</text>
+  <rect x="30" y="548" width="1140" height="56" rx="12" fill="#FFFFFF" stroke="#C9D6EA"/>
+  <text x="600" y="572" text-anchor="middle" font-size="11.5" fill="#0B1F3A">Privacy model — resume files are parsed on-device (pdf.js · mammoth · tesseract); files, scores and sessions stay in your browser.</text>
+  <text x="600" y="592" text-anchor="middle" font-size="10.5" fill="#5A6C8C">Only prompt text and profile metadata cross the network. The AI key lives in server-side secrets — never in the client bundle.</text>
 </svg>

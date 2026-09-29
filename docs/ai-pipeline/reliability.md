@@ -9,8 +9,8 @@ Every AI call passes through the same seven-stage lifecycle, then the app decide
 ```
 ① cache        localStorage `airesume_cache_v1:<hash>` · TTL 24 h · exact-input check
 ② dedupe       identical in-flight requests share one promise (120 s eviction)
-③ slot         max 2 concurrent proxy requests · FIFO queue
-④ fetch        POST {prompt, json} · 60 s AbortController timeout
+③ slot         max 4 concurrent proxy requests (1–8 via `VITE_AI_CONCURRENCY`) · FIFO queue
+④ fetch        POST {prompt, json} · 120 s AbortController timeout (batches 110 s)
 ⑤ retry        exponential backoff + jitter · 429 → 5 tries (honors Retry-After)
                others → 4 tries · aborts excluded from further retries
 ⑥ JSON repair  strip ``` fences → strict parse → first{…}last} salvage → throw
@@ -25,7 +25,7 @@ Stage details in [Services → AI Gateway](../services/ai-gateway.md); the retry
 | --- | --- | --- |
 | Proxy URL missing | `hasAccess()` false | HR banner + heuristic fallbacks; student sections show a clear message |
 | 429 / 5xx | status codes | Backoff retries (5 for 429, honoring `Retry-After`), then `proxyErrorMessage` copy |
-| Timeout | 60 s abort | Retried, then error box |
+| Timeout | 120 s abort (110 s batches) | Retried, then error box |
 | Model EOL | 410 / body sniff | "The AI model is temporarily unavailable (it's being updated)" |
 | Unparseable JSON | `parseJsonResponse` throws | Section error box; HR path falls back per candidate |
 | One file unreadable | `extractText` → null | That candidate fails ("Could not read this file"); the rest still process |

@@ -4,7 +4,7 @@
 
 ## Entry chain
 
-1. **`index.html`** — SPA shell: meta/OG tags, fonts, `#root`, manifest link.
+1. **`index.html`** — SPA shell: meta/OG tags, fonts, `#root`.
 2. **`src/main.jsx`** — `StrictMode` → `ErrorBoundary` → `HelmetProvider` → `App`; imports self-hosted fonts + `index.css`.
 3. **`src/App.jsx`** — router + chrome (details below).
 
@@ -12,7 +12,7 @@
 
 - **`BrowserRouter`** → **`AuthProvider`** → routes; **Sonner `Toaster`** (top-center) for toasts.
 - **Ambient layer:** the Velaris WebGL background renders `fixed z-0` on every page **except** `/`; page content sits in a `relative z-10` layer so text always paints above the ambient water. The landing runs its own full-screen 3D stage instead.
-- **Code splitting:** heavy pages are `lazy()` (Landing, Upload, AppPage, HrDashboard, Sessions, CandidateView) behind a `Suspense` boundary whose fallback is two skeleton cards.
+- **Code splitting:** heavy pages are `lazy()` (Landing, Upload, AppPage, HrDashboard, Sessions, CandidateView, NotFound) behind a `Suspense` boundary whose fallback is two skeleton cards.
 - `CookieConsentBanner` on all pages except the four legal pages.
 
 ## Route table
@@ -49,7 +49,7 @@ Exposes `{ user, role, loading, logout, setRole, switchRole, isConfigured }`.
 - **Auth state:** subscribes via `services/auth.js#subscribeToAuth`; role comes from `services/role.js` (per-uid localStorage, canonical-value validated on read).
 - **Stale-token hygiene:** on every auth event the provider force-refreshes the ID token (`getIdToken(true)`). If refresh fails (revoked, disabled, orphaned session), it signs out cleanly so downstream `Bearer` calls never run on an expired credential.
 - **`setRole(next, uid?)`** — persists role, updates state (used by Onboarding).
-- **`switchRole(next)`** — wipes **all** local user data first (`dataWipe#wipeUserData`: resume text, sessions, HR store, candidate cache, AI cache), then sets the role. Intentional: the two workspaces have incompatible data shapes.
+- **`switchRole(next)`** — wipes **all** user data first (`dataWipe#wipeUserData`: Supabase `resumes/{uid}/` folder, IndexedDB sessions, HR store, candidate cache, AI cache, and the HR worker's KV mirror via `POST /account/delete`), then sets the role. Intentional: the two workspaces have incompatible data shapes.
 - Sets `document.documentElement.dataset.theme` to the active role.
 
 ## URL state conventions

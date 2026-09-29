@@ -23,7 +23,7 @@ All parsing happens **in the browser** — the heart of the local-first privacy 
 ### `extractText` dispatch
 
 ```
-pdf   → extractTextFromPdf  (text layer; sparse? → OCR pages at 2× scale)
+pdf   → extractTextFromPdf  (text layer; sparse? → OCR pages at 1.5× scale)
 docx  → mammoth extractRawText
 rtf   → file.text() → stripRtf
 txt/md/csv → file.text()
@@ -35,7 +35,7 @@ unknown → best-effort plain text (never hard-fails)
 
 1. Lazy-loads `pdfjs-dist` (single cached promise) and sets `GlobalWorkerOptions.workerSrc` from a bundled URL.
 2. `getDocument({data: arrayBuffer})` → per page: `getTextContent()` → items joined with `--- Page N ---` separators.
-3. `isSparse(text)` (< 40 non-whitespace chars) and OCR fallback on → renders each page to canvas at 2× and OCRs it with tesseract.js (worker terminated in `finally`).
+3. `isSparse(text)` (< 40 non-whitespace chars) and OCR fallback on → renders each page to canvas at 1.5× (`OCR_RENDER_SCALE`) and OCRs it with tesseract.js via the persistent worker pool.
 
 ### `looksLikeResume` heuristic
 
@@ -56,10 +56,10 @@ pdfjs-dist 6 calls three standard-library methods browsers don't ship yet:
 
 Without this, **every PDF parse fails** on current browsers with `toHex is not a function`. Verified: real text extraction works end-to-end with the shims; removing them breaks parsing immediately.
 
-## `ocr.js`
+## `ocr.js` + `ocrWorkerPool.js`
 
 - `isSparse(text)` — the OCR trigger threshold.
-- `ocrImage(imageSource)` / `ocrFile(file)` — tesseract worker lifecycle: `createWorker(["eng"])` → `recognize` → `terminate` in `finally`.
+- `ocrImage(imageSource)` / `ocrFile(file)` — route through the pooled tesseract workers; the pool bootstraps lazily and keeps **1–2 persistent `eng` workers** (2 only on ≥4-core machines), so repeated extracts don't pay cold-start. No per-file `createWorker`/`terminate`.
 
 ---
 

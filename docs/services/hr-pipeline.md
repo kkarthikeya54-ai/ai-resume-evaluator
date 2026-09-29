@@ -86,7 +86,7 @@ Benchmarked in the live app against `C:\…\500_extended_realistic_resumes_COMPL
 | Score spread / distinct values | 42–70 / 28 | identical (cache returns the same text) |
 | Session persistence (500 candidates, 1.4 MB) | put ≈ 120 ms / read ≈ 90 ms | — |
 
-Extract-cache speedup: **≈ 40×** on re-runs. For scale, AI-mode on the free proxy measured 90–300+ s *per batch* (a 500-file run would be hours; local mode makes it seconds). Gates: lint 1.7 s · 108 tests 6.3 s · UI audit 0.2 s · build 8.6 s.
+Extract-cache speedup: **≈ 40×** on re-runs. For scale, AI-mode on the free proxy measured 90–300+ s *per batch* (a 500-file run would be hours; local mode makes it seconds). Gates: lint 1.7 s · 111 tests 1.5 s · UI audit 0.2 s · build 8.6 s.
 
 ---
 

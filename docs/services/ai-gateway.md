@@ -11,8 +11,8 @@ generate(type, input)
  1. cache check      localStorage `airesume_cache_v1:<hash(type:input)>`, TTL 24 h,
                      stored input must match exactly (hash-collision defense)
  2. in-flight dedupe identical concurrent calls share ONE promise (120 s eviction)
- 3. concurrency slot max 2 simultaneous proxy requests (FIFO promise queue)
- 4. fetch            POST {prompt, json} · 60 s AbortController timeout
+ 3. concurrency slot max 4 simultaneous proxy requests (FIFO queue, 1–8 via `VITE_AI_CONCURRENCY`)
+ 4. fetch            POST {prompt, json} · 120 s AbortController timeout (batches 110 s)
  5. retry loop       exponential backoff 1.5s·2ⁿ + jitter (3s base for 429);
                      budgets: 429 → 5 retries (honors Retry-After), others → 4
  6. JSON repair      parseJsonResponse: strip fences → strict parse →
@@ -58,7 +58,7 @@ Prompt-design conventions: resume text is fenced in `"""` blocks; schemas enumer
 | --- | --- |
 | 24 h cache | Re-analyzing the same resume is free for a day |
 | In-flight dedupe | 10 sections firing together never double-call |
-| Concurrency 2 | Protects the free-tier proxy from stampedes |
+| Concurrency 4 | Protects the free-tier proxy from stampedes (default; 1–8 via `VITE_AI_CONCURRENCY`) |
 | Batch evaluation (HR) | 1 LLM call per 3 candidates instead of 3 calls |
 | 8,000-char truncation | Caps per-resume prompt size |
 

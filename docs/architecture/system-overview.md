@@ -6,7 +6,7 @@ The visual version of this page lives at the wiki root: [architecture.svg](../ar
 
 ## The shape of the system
 
-A **local-first React SPA** with two thin cloud dependencies:
+A **local-first React SPA** with thin cloud dependencies — all optional except the AI proxy:
 
 ```
 Browser (React SPA)                          Cloud
@@ -20,15 +20,16 @@ Browser (React SPA)                          Cloud
 │ gemini.js (cache·dedupe·    │
 │ retry·concurrency)          │
 │        │                    │   PUT/PATCH/GET    ┌──────────────────────┐
-│ hrScoring / AppPage         │  + Bearer token    │ Firebase Functions   │
-│        │                    ├───────────────────►│ (5 endpoints)        │
-│        ▼                    │                    └─────────┬────────────┘
-│ IndexedDB · localStorage    │                              ▼
-│ sessionStorage              │                    Firestore · Storage
-└─────────────────────────────┘                    (owner-scoped rules)
+│ hrScoring / AppPage         │  + Bearer token    │ HR API Worker (KV)   │
+│        │                    ├───────────────────►│ (uid-scoped keys)    │
+│        ▼                    │                    └──────────────────────┘
+│ IndexedDB · localStorage    │                              ▲
+│ sessionStorage · Supabase   │   resume file (optional)     │
+│ Storage (resumes bucket)    │─────► Supabase Storage ──────┘
+└─────────────────────────────┘
 ```
 
-**Design consequence:** the browser can do its whole job offline except the AI calls. Parsing happens on-device; storage is local; the cloud exists for (a) the AI key boundary and (b) optional mirrors of small structured data.
+**Design consequence:** the browser can do its whole job offline except the AI calls. Parsing happens on-device; storage is local; the cloud exists for (a) the AI key boundary and (b) optional mirrors of small structured data (HR KV sync, Supabase resume files).
 
 ## Technology layers
 
@@ -38,10 +39,10 @@ Browser (React SPA)                          Cloud
 | 3D / motion | three.js + @react-three/fiber (landing), framer-motion, custom CSS motion layer | `prefers-reduced-motion` respected everywhere |
 | Parsing | pdfjs-dist (worker), mammoth, tesseract.js | All client-side |
 | State | React context (`AuthContext`) + per-section `useGemini` state + window CustomEvent bus | No Redux/Zustand — deliberately small |
-| Persistence | IndexedDB (2 DBs), localStorage, sessionStorage | See [Data Flow](./data-flow.md) |
+| Persistence | IndexedDB (3 DBs), localStorage, sessionStorage, optional Supabase Storage | See [Data Flow](./data-flow.md) |
 | Auth | Firebase Auth | Email/password, Google popup, email verification |
-| Cloud | Firebase Functions v2 (Node 20), Firestore, Storage, Cloudflare Worker | See [Backend](../backend/README.md) |
-| Quality | Vitest (63), oxlint, PWA build | See [Testing](../testing/README.md) |
+| Cloud | Cloudflare Workers (AI proxy + HR KV), Firestore, Supabase Storage · Functions v2 (legacy) | See [Backend](../backend/README.md) |
+| Quality | Vitest (111), oxlint, UI contrast audit | See [Testing](../testing/README.md) |
 
 ## The two user flows (condensed)
 
@@ -57,7 +58,7 @@ Details: [AI Pipeline → Student Flow](../ai-pipeline/student-flow.md)
 ### HR
 ```
 /hr: session (IndexedDB) → rules + keywords → expandKeywords (AI)
-  → multi-file upload → runHrAnalysis: batches of 3, concurrency 2
+  → multi-file upload → runHrAnalysis: batches of 3, pool of 6
   → extract → evaluateBatch (1 LLM call per batch) → normalize → rank
   → HrTable (virtualized) → CandidateView / CompareModal / Copilot
 ```
