@@ -324,7 +324,7 @@ export default function HrResults({ session, sessionId, onToggleShortlist, onUpd
 
       {/* ── Ranked list + copilot, or kanban board ─────────── */}
       {viewMode === "table" ? (
-        <div id="hr-results" className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+        <div id="hr-results" className="grid grid-cols-1 gap-6 items-start">
           <div className="space-y-6">
             <HrTable
               candidates={filteredCandidates}
