@@ -32,6 +32,7 @@ describe("getGoogleAuthErrorMessage", () => {
   it("explains the browser-privacy workaround for unknown codes (partitioned storage failures)", () => {
     const msg = getGoogleAuthErrorMessage({ code: "" });
     expect(msg).toContain("cross-site cookies");
+    expect(msg).toContain("ad blocker");
     expect(msg).toContain("Enhanced Tracking Protection");
     expect(msg).toContain("shield icon");
     expect(msg).toContain("Email & Password");

@@ -18,13 +18,13 @@ const AUTH_ERROR_MESSAGES = {
 };
 
 // Google sign-in (popup) relays credentials through a cross-origin Firebase
-// auth iframe, so it needs cross-site cookies. Browsers with partitioned or
-// blocked third-party storage (Firefox Enhanced Tracking Protection / Total
-// Cookie Protection, Safari ITP) break it regardless of server config. There
-// is no in-app workaround for that environment — the user must either allow
-// the site's cookies or use email/password (which is fully first-party).
+// auth iframe and pop-up, so it needs third-party requests AND cross-site
+// cookies. Browsers with partitioned/blocked third-party storage (Firefox
+// Enhanced Tracking Protection, Safari ITP) and ad-blocker extensions all
+// break it regardless of server config. Email/password is fully first-party
+// and always works in those environments.
 const PRIVACY_HINT =
-  " Google sign-in needs cross-site cookies, and your browser appears to be blocking or partitioning them (privacy settings like Firefox's Enhanced Tracking Protection). Click the shield icon in the address bar and turn off protection for this site, then try again — or sign in with Email & Password above.";
+  " Google sign-in needs cross-site cookies and third-party pop-ups, which ad blockers and privacy settings often block (e.g. an ad-blocker extension, or Firefox's Enhanced Tracking Protection). Add an exception for this site in your ad blocker, or turn off protection from the shield icon in the address bar — then try again. You can also sign in with Email & Password above.";
 
 // Fire these without the hint when the user obviously cancelled.
 const USER_CANCELLED_CODES = new Set([
