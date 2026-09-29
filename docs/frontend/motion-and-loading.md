@@ -10,7 +10,7 @@ Three motion systems cover the app: **cursor-interactive effects**, **loading an
 | --- | --- | --- |
 | `Magnetic.jsx` | Wrapped element translates toward the cursor (strength ~0.2) | HR Process CTA, student Run-All, Create Hiring Session |
 | `TiltCard3D.jsx` | Perspective tilt (max ~10°) + soft glare (0.22 white) | Candidate header, CompareModal, HR result cards |
-| `SpotlightCard.jsx` | Radial coral glow follows the cursor via CSS vars `--spot-x/--spot-y` | HR ranked-table rows (per-row handler) |
+| `SpotlightCard.jsx` | Radial primary-blue glow follows the cursor via CSS vars `--spot-x/--spot-y` | HR ranked-table rows (per-row handler) |
 
 **A11y gating (all three):** handlers activate only when `window.matchMedia("(pointer: fine)")` matches **and** reduced-motion is off. CSS side: hover affordances gated inside `@media (pointer: fine)`; `.spotlight-card::before` and `.tilt-glare` are `display: none` under reduced motion.
 
@@ -18,7 +18,7 @@ Three motion systems cover the app: **cursor-interactive effects**, **loading an
 
 ## 2. Loading animations
 
-- **HR stage meter** (`.hr-stage-meter__bar`): flowing coral gradient ribbon (`stage-flow` 1.8s loop) with animated width; **settles to sage + static** when the run completes (`--done`).
+- **HR stage meter** (`.hr-stage-meter__bar`): flowing royal-blue gradient ribbon (`stage-flow` 1.8s loop) with animated width; **settles to sky `#2563EB` + static** when the run completes (`--done`).
 - **Staggered entrance** (`.stagger-item`): fade-up cascade via inline `animation-delay` (120ms steps in stacks, 90ms in rows).
 - **Ambient shiver** (`.skeleton-ambient` on `<html>`): while any skeleton is mounted, nearby live content breathes in sync — the page feels like it's "working".
 - **Count-up numbers** (`useCountUp`): eased rAF count when scores scroll into view; instant under reduced motion.
@@ -35,7 +35,7 @@ Three motion systems cover the app: **cursor-interactive effects**, **loading an
 
 **Wiring contract (everywhere):** `loading && !data → skeleton`. Cached results never flash skeletons; already-loaded sections skip straight to content.
 
-**Visual language:** `.skeleton-base` bars get an infinite **coral→sage shimmer sweep** (`skeleton-sweep`); card wrappers add the `.skeleton-shiver` sway so users read *generating*, not *broken*. The sweep uses `transform: translateX` only (compositor-friendly, no layout thrash).
+**Visual language:** `.skeleton-base` bars get an infinite **primary-blue shimmer sweep** (`skeleton-sweep`); card wrappers add the `.skeleton-shiver` sway so users read *generating*, not *broken*. The sweep uses `transform: translateX` only (compositor-friendly, no layout thrash).
 
 ## The reduced-motion contract
 

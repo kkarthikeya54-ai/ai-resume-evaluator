@@ -7,7 +7,7 @@ One component per route (guards in [Architecture → Routing](../architecture/ro
 ## Landing — `pages/Landing.jsx` → `landing/LandingCinematic.jsx`
 A self-contained cinematic module (~2,900 lines in `src/landing/`): one continuous scroll journey over a fixed three.js stage — a 3D "resume document" that reassembles across **11 story phases**.
 
-- **`utils/scroll.js`** — the scroll store: measures the "knee" (3D track vs post-track split), maps scroll → story fraction, exposes phase bounds, re-anchors on resize preserving story position against pre-resize document height. Covered by 19 unit tests.
+- **`utils/scroll.js`** — the scroll store: measures the "knee" (3D track vs post-track split), maps scroll → story fraction, exposes phase bounds, re-anchors on resize preserving story position against pre-resize document height.
 - **Auth-aware CTAs:** guests → demo modal (paste text → simulated analysis → routed to `/signup`); students → `/upload`; HR → `/hr`.
 - Key pieces: `overlay/CanvasStage` (WebGL check + lazy scene), `overlay/HiggsfieldLayer` (aurora wash), `ui/Chrome` (preloader/nav/progress/footer), `ui/Showcase3D`, `scene/` (camera rig + chapter meshes).
 

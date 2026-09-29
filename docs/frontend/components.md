@@ -7,8 +7,11 @@
 | Component | What it does |
 | --- | --- |
 | `RoleGuards.jsx` | The five route guards — see [Architecture → Routing](../architecture/routing-and-guards.md) |
+| `ProtectedRoute.jsx` | Raw auth gate used under the role guards |
+| `RolePicker.jsx` | Onboarding role selection (`student`/`hr`) |
 | `DashboardHeader.jsx` | App header: logo, role badge, nav (sessions/account), sign out |
 | `SessionBar.jsx` | Current-session name + link to `/sessions` |
+| `HeroMetrics.jsx` | Landing hero stat chips |
 | `Seo.jsx` | react-helmet-async wrapper: title, description, per-page `noindex` |
 | `ErrorBoundary.jsx` | Top-level crash boundary with reload CTA |
 | `FormField.jsx`, `Logo.jsx` | Auth-form input; brand logo/wordmark with size variants |
@@ -40,12 +43,20 @@ All follow the same contract — props `resumeText`, state via `useGemini()`, su
 | --- | --- |
 | `HrConfigForm.jsx` | Job rules, keywords, role presets, dropzone, Process CTA (Magnetic + sheen sweep) |
 | `MultiFileDropzone.jsx` | Multi-file selection with `isSupportedFile` + `validateFileBytes` + size caps |
-| `HrProgress.jsx` | Stage meter (flowing coral → sage when done) + skeleton rows |
+| `HrProgress.jsx` | Stage meter (flowing primary-blue → sky when done) + skeleton rows |
 | `HrResults.jsx` | Results orchestrator: stats, filters, table, compare, copilot |
 | `HrTable.jsx` | **Virtualized** (@tanstack/react-virtual) ranked table — only visible rows render; sortable columns, shortlist star, per-row cursor spotlight |
 | `CompareModal.jsx` | Side-by-side of up to 3 candidates (TiltCard3D cards) |
 | `HrChatPanel.jsx` | Recruiter Copilot chat (see [AI Pipeline → Copilot](../ai-pipeline/copilot.md)) |
 | `Markdown.jsx` | Minimal markdown renderer for copilot answers |
+| `KanbanBoard.jsx` | Candidate stages as a board (knees/screened/shortlisted…) with drag-ish grouping |
+| `CopilotAuditLog.jsx` | Verb-annotated history of copilot actions on candidates |
+| `JourneyTimeline.jsx` | Candidate-state changes rendered as a timeline |
+| `LeaderboardHero.jsx` | Top-candidate leaderboard card for the HR dashboard header |
+
+## UI micro-components (`components/ui/`)
+
+`Button` (variants + sheen sweep), `Magnetic`, `TiltCard3D` (3D tilt cards), `SpotlightCard` (cursor spotlight), `CountUp` (animated numbers), `Reveal`, `Marquee`, `TextScramble`, `Typewriter`, `BorderBeam`, `ConfettiBurst` (success bursts), `ScoreGauge3D` (3D gauge), `SkillCloud3D` (3D skill chip cloud), `TugOfWar` (drag tugger), `Icon`, and `velaris` (the raw-WebGL ambient shader behind app pages).
 
 ## Upload components (`components/upload/`)
 `FileDropzone` (single-file), `UploadProgress`, `FileInfoCard`, `SuccessAnimation`.
@@ -69,6 +80,7 @@ Why: "run everything" stays trivial, while each section owns its own loading/err
 | Hook | Purpose |
 | --- | --- |
 | `useGemini.js` | `{loading, error, data, execute, reset}` state machine around `GeminiService` |
+| `useAnalysisRunState.js` | Co-located loading/error/data state for each AI section (wraps `useGemini`) |
 | `useCountUp.js` | rAF count-up with easing; in-view gated; reduced-motion → instant |
 | `useInView.js` | One-shot IntersectionObserver visibility |
 | `useFocusTrap.js` | WCAG focus trap: Tab/Shift+Tab cycle, Escape close, focus restore — used by all three modals |
