@@ -33,14 +33,14 @@ Signup/Login → Onboarding ("I'm a student", 5-slide tour)
 Onboarding ("I'm hiring") → /hr → create a hiring session
   → enter job rules + keywords → AI expands keywords (originals + synonyms)
   → drop resumes (multi-file, validated) → Process & Rank
-  → batches of 3, concurrency 2 → every candidate evaluated & ranked
+  → batches of 3, concurrency 6 → every candidate evaluated & ranked
   → ranked table → candidate reports, compare modal, shortlists
   → Recruiter Copilot answers questions grounded in the actual resumes
 ```
 
 ## Product principles (as implemented)
 
-1. **Local-first privacy.** Files are parsed in the browser (pdf.js, mammoth, tesseract.js). Sessions, resume text, and AI results live in the user's browser (IndexedDB / localStorage). Only small structured metadata is optionally synced. See [Data & Privacy](../data-and-privacy/README.md).
+1. **Local-first privacy.** Files are parsed in the browser (pdf.js, mammoth, tesseract.js). Sessions, resume text, and AI results live in the user's browser (IndexedDB / localStorage). Only resume files optionally move to Supabase Storage and small structured metadata to the HR Worker's KV. See [Data & Privacy](../data-and-privacy/README.md).
 2. **Secrets never reach the client.** The LLM key lives server-side; the browser talks to a proxy that injects it. See [Backend](../backend/README.md).
 3. **Graceful degradation.** Every AI feature has a non-AI fallback (heuristic keyword/section scoring), so the product never hard-fails. See [AI Pipeline → Fallbacks](../ai-pipeline/ranking-math.md#the-fallback-evaluator).
 4. **Accessibility.** WCAG-AA-contrast palette, focus-trapped modals, `prefers-reduced-motion` support, `pointer: fine` gating for hover effects. See [Design System](../frontend/design-system.md).

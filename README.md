@@ -31,14 +31,15 @@ AI-powered resume evaluation and parsing platform that lets job seekers and stud
 
 ### Shared
 - **Authentication** — email/password (with password reset & email verification) and Google sign-in via Firebase
-- **Cloud Persistence** — student resumes are uploaded to Firebase Storage with metadata and parsed text saved per user in Firestore (auto-loads your last resume when you return, with a delete option)
+- **Cloud Persistence** — student resumes are stored locally by default; when the Supabase vars are set, the resume **file** uploads to a Supabase `resumes` bucket (metadata + parsed text stay in the browser) and the profile persists to Firestore
 
 ## Tech Stack
 
 - [React](https://react.dev) 19 + [Vite](https://vite.dev) 8
 - [Tailwind CSS](https://tailwindcss.com) v4 (light blue/white design system)
 - [React Router](https://reactrouter.com) v7
-- [Firebase](https://firebase.google.com) — Auth, Storage, Firestore, Cloud Functions
+- [Firebase](https://firebase.google.com) — Auth, Firestore (profiles)
+- [Supabase](https://supabase.com) — Storage (optional cloud resume files)
 - [Google Gemini](https://ai.google.dev) (`gemini-3.8-flash`) for all AI analysis
 - [pdfjs-dist](https://www.npmjs.com/package/pdfjs-dist) for client-side PDF text extraction
 - [mammoth](https://www.npmjs.com/package/mammoth) for DOCX text extraction
@@ -73,43 +74,47 @@ VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 VITE_FIREBASE_APP_ID=your-app-id
 
-# Google Gemini
-VITE_GEMINI_API_KEY=your-gemini-api-key
-# VITE_GEMINI_PROXY_URL=https://us-central1-your-project.cloudfunctions.net/analyzeResume
+# AI proxy — Cloudflare Worker (Gemini primary, NVIDIA fallback). Keys live server-side.
+VITE_AI_PROXY_URL=https://ai-proxy.YOUR_SUBDOMAIN.workers.dev
+
+# Supabase Storage — OPTIONAL cloud resume files (public bucket named `resumes`)
+VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-> If Firebase variables are missing, the app runs in **demo mode**: auth is skipped and resume uploads fall back to local browser storage, so you can still try the UI.
+> If Firebase variables are missing, the app runs in **degraded mode**: auth pages explain the gap, and resume uploads fall back to local browser storage, so you can still try the UI. The AI proxy URL is the only variable AI features need.
 
-### Keeping Your Gemini API Key Secret (recommended)
+### Keeping Your AI Keys Secret (recommended)
 
-A `VITE_*` key is compiled into the client bundle and is visible to anyone. For production, keep the key server-side:
+`VITE_*` vars are compiled into the client bundle and are visible to anyone. The **model keys never go in the bundle** — they live as secrets in a Cloudflare Worker:
 
-1. Deploy the included Cloud Function proxy (see `functions/`):
+1. Deploy the server-side proxy ([docs](docs/backend/worker-proxy.md)):
 
 ```bash
-npm install --prefix functions
-firebase functions:config:set gemini.api_key="your-gemini-api-key" # or use a Secret Manager secret
-firebase deploy --only functions
+cd worker
+wrangler secret put GEMINI_API_KEY     # primary (aistudio.google.com/apikey)
+wrangler secret put NVIDIA_API_KEY     # fallback (build.nvidia.com) — optional
+wrangler deploy
 ```
 
-2. Set `VITE_GEMINI_PROXY_URL` to the deployed URL (e.g. `https://us-central1-<project>.cloudfunctions.net/analyzeResume`).
-3. Leave `VITE_GEMINI_API_KEY` empty — the app will call the proxy instead.
+2. Set `VITE_AI_PROXY_URL` to the resulting `*.workers.dev` URL
+3. Never add `VITE_GEMINI_API_KEY` or `VITE_AI_STUDIO_*` to `.env` — no such variable is read by the current source
 
 ### Firebase Setup
 
 1. Enable **Email/Password** and **Google** providers in Firebase Authentication.
-2. Enable **Firestore** and **Storage** in your project.
+2. Enable **Firestore** for profiles. (Firebase **Storage** is only used by the dead-code `cloudResumeStorage.js` path — the active resume-file cloud is Supabase; both are optional because the app is local-first.)
 3. Deploy the security rules (they are already in this repo):
 
 ```bash
 firebase deploy --only firestore:rules,storage
 ```
 
-The rules lock all resume data (metadata + extracted text) to the owning user:
+The rules lock all resume data to the owning user (the legacy Firebase Storage path used by no active code, plus Firestore profiles):
 
 ```js
 // firestore.rules
-match /resumes/{userId} {
+match /users/{userId} {
   allow read, write: if request.auth != null && request.auth.uid == userId;
 }
 ```
@@ -120,6 +125,14 @@ match /resumes/{userId}/{allPaths=**} {
   allow read, write: if request.auth != null && request.auth.uid == userId;
 }
 ```
+
+### Supabase Setup (optional — cloud resume files)
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. Add a **public** bucket named `resumes` (UI: Storage → New bucket, check *Public*).
+3. Copy `Project Settings → API` → Project URL + anon key into `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`.
+
+See [docs/tutorials/](docs/tutorials/) for the full end-to-end setup walkthroughs.
 
 ### Run
 

@@ -6,17 +6,17 @@ Every file in the workspace with a one-line purpose. Narrative docs live in the 
 
 ```
 ai-resume-evaluation/
-├── index.html                  # SPA shell: meta/OG, fonts, #root, manifest link
+├── index.html                  # SPA shell: meta/OG, fonts, #root (no PWA manifest)
 ├── package.json                # Scripts + dependency manifest
-├── vite.config.js              # react · tailwind · pdfjs worker polyfill · PWA plugins
+├── vite.config.js              # react · tailwind · pdfjs worker polyfill (no PWA plugin)
 ├── firebase.json               # Deploy config: firestore, storage, functions (nodejs20)
 ├── firestore.rules             # users/{uid} + hr_sessions owner-only
 ├── firestore.indexes.json      # No composite indexes needed
-├── storage.rules               # resumes/{uid}/... owner-only
+├── storage.rules               # resumes/{uid}/... owner-only (legacy Firebase path)
 ├── .env.example                # Env template (names only, placeholders)
 ├── .gitignore / .oxlintignore
 ├── docs/                       # ← this wiki (see docs/README.md)
-├── public/favicon.svg          # App icon (PWA manifest uses it)
+├── public/favicon.svg          # App icon (favicon / OG image)
 │
 ├── src/
 │   ├── main.jsx                # StrictMode → ErrorBoundary → HelmetProvider → App
@@ -54,19 +54,25 @@ ai-resume-evaluation/
 │   │   ├── charts/             # DonutChart · RadarChart · SkillDistributionChart (SVG)
 │   │   ├── hr/                 # HrConfigForm · MultiFileDropzone · HrProgress · HrResults
 │   │   │                       # HrTable (virtualized) · CompareModal · HrChatPanel · Markdown
+│   │   │                       # KanbanBoard · CopilotAuditLog · JourneyTimeline · LeaderboardHero
 │   │   ├── upload/             # FileDropzone · UploadProgress · FileInfoCard · SuccessAnimation
 │   │   ├── ui/                 # Button · Magnetic · TiltCard3D · SpotlightCard · CountUp
 │   │   │                       # Reveal · Marquee · TextScramble · BorderBeam · ScoreGauge3D
-│   │   │                       # SkillCloud3D · velaris (WebGL shader background)
+│   │   │                       # SkillCloud3D · velaris (WebGL shader background) · ConfettiBurst
+│   │   │                       # Typewriter · TugOfWar
 │   │   └── onboarding/Illustrations.jsx   # Chip + 10 SVG tour illustrations
 │   ├── services/               # See docs/services/ — the whole logic layer
 │   │   ├── auth.js · role.js · authErrors→(utils) · fileParser.js · pdfjsCompat.js · ocr.js
+│   │   ├── ocrWorkerPool.js · extractCache.js · localScoring.js
 │   │   ├── gemini.js · hrScoring.js · hrChat.js · hrBackend.js
 │   │   ├── sessionStore.js · hrStore.js · localResumeStorage.js
-│   │   ├── cloudResumeStorage.js · resumeStorage.js (facade) · userProfile.js
+│   │   ├── supabaseResumeStorage.js · resumeStorage.js (facade) · userProfile.js
+│   │   ├── cloudResumeStorage.js (⚠️ dead code — legacy Firebase, unimported)
 │   │   ├── dataWipe.js · storageUtils.js
 │   │   └── __tests__/          # fileParser · gemini · hrScoring · hrChat · hrStore · storageUtils
-│   ├── hooks/                  # useGemini · useCountUp · useInView · useFocusTrap
+│   │                           # localScoring · perfPipeline · chatRankContext · copilotActions
+│   │                           # authErrors · KanbanBoard
+│   ├── hooks/                  # useGemini · useCountUp · useInView · useFocusTrap · useAnalysisRunState
 │   ├── utils/                  # analysisEvents (event bus) · authErrors (error map)
 │   ├── data/sampleSession.js   # Pre-built HR demo session
 │   └── landing/                # Cinematic landing (self-contained module)
@@ -74,7 +80,7 @@ ai-resume-evaluation/
 │       ├── overlay/            # CanvasStage · HiggsfieldLayer · StoryScroll · sections/ · modals/AnalysisModal
 │       ├── scene/              # Scene · cameraRig · chapters1/2 · primitives · resumeStage
 │       ├── ui/                 # Chrome · kit · Showcase3D · Storyline · story
-│       └── utils/              # scroll (store, 19 tests) · environment · webgl · colors · textures
+│       └── utils/              # scroll (store) · environment · webgl · colors · textures
 │
 ├── functions/                  # ⚠️ Legacy — Cloud Functions (Node 20, ESM); Blaze required to deploy
 │   ├── index.js                # analyzeResume · saveHrSession · updateCandidateStatus
@@ -84,10 +90,10 @@ ai-resume-evaluation/
 └── worker/                     # Cloudflare Workers
     ├── ai-proxy.js             # POST {prompt} → Gemini/NVIDIA → {result}
     ├── hr-api.js               # HR cloud backend: /session(s) CRUD + /account/delete (Workers KV)
-    ├── wrangler.toml · wrangler.hr-api.toml · deploy.js · README.md   # ⚠️ README contains an example key — prune
+    ├── wrangler.toml · wrangler.hr-api.toml · deploy.js · README.md
 ```
 
-**Counts:** ~128 source files under `src/` · 7 test files (63 tests) · 1 legacy Cloud Functions module (5 endpoints) · 2 Cloudflare Workers (AI proxy + HR API).
+**Counts:** ~145 source files under `src/` · 12 test files (111 tests) · 1 legacy Cloud Functions module (5 endpoints) · 2 Cloudflare Workers (AI proxy + HR API).
 
 ---
 

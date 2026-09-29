@@ -29,14 +29,14 @@ Every domain term used across the wiki, defined the way the code uses it.
 | **Magic bytes** | The file-signature bytes used to validate uploads (`%PDF`, `PK`, PNG/JPEG headers…) before parsing. |
 | **Sparse text** | Extracted text under 40 non-whitespace chars — triggers OCR fallback for scanned resumes. |
 | **In-flight dedupe** | Identical concurrent AI requests share one promise instead of calling twice. |
-| **Concurrency slots** | The max-2 simultaneous proxy requests enforced by a FIFO promise queue. |
+| **Concurrency slots** | The max simultaneous proxy requests enforced by a FIFO promise queue — default 4, tunable 1–8 via `VITE_AI_CONCURRENCY`. |
 | **Batch** | A chunk of up to 3 candidates evaluated in one LLM call. |
 | **Signal** | The plain `{cancelled}` object threaded through the HR pipeline for cooperative cancellation. |
 | **Landing knee** | The scroll-length handoff between the landing's 3D story track and the post-track content; measured and re-anchored on resize (see `src/landing/utils/scroll.js`). |
 | **Phase** | One of the 11 story chapters of the cinematic landing, driven by scroll fraction. |
 | **Skeleton (loading)** | Placeholder UI (shimmer bars/cards) shown while AI content generates; part of the motion layer. |
 | **Velaris** | The raw-WebGL ambient background shader behind app pages. |
-| **PWA** | Progressive Web App — installable, offline app shell via Workbox service worker. |
+| **Storage provider** | `resumeStorage.js` picks **Supabase** (`resumes` bucket) when `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` are set, else the purely local store. Switching is automatic — consumers never see it. |
 
 ## Storage keys & collections
 
@@ -44,14 +44,15 @@ Every domain term used across the wiki, defined the way the code uses it.
 | --- | --- |
 | IndexedDB `airesume_sessions` | All sessions (both roles), incl. resume bytes |
 | IndexedDB `airesume_hr` | Legacy single HR session (migrated once) |
+| IndexedDB `airesume_extract` | Parsed-text cache for HR extraction (7-day TTL, SHA-256 keys) |
 | `localStorage: airesume_role_<uid>` | The user's chosen role |
 | `localStorage: airesume_resume_text_<uid>` | Student resume text |
-| `localStorage: airesume_resume_metadata` | Upload metadata list |
+| `localStorage: airesume_resume_metadata` | Upload metadata list (kept even when files go to Supabase) |
 | `localStorage: airesume_cache_v1:<hash>` | AI result cache (24 h TTL) |
 | `sessionStorage: airesume_hr_candidates` | Current-tab candidate cache |
 | Firestore `users/{uid}` | Profile + usage stats |
 | Workers KV (`hr:session:<uid>:<id>`) | Cloud mirror of HR sessions, served by the HR API Worker |
-| Storage `resumes/{uid}/…` | (Optional cloud path) resume files |
+| Supabase Storage `resumes/{uid}/…` | (Optional cloud path) resume files, used automatically when Supabase vars are set — else all-local |
 
 ---
 

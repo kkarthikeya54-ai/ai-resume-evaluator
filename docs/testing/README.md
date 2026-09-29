@@ -4,7 +4,7 @@ How the project is verified: unit suites, quality gates, and the live verificati
 
 | Page | Contents |
 | --- | --- |
-| **[Test Suites](./test-suites.md)** | All 63 tests mapped file-by-file, conventions, what's deliberately not unit-tested |
+| **[Test Suites](./test-suites.md)** | All 111 tests mapped file-by-file, conventions, what's deliberately not unit-tested |
 | **[Quality Gates](./quality-gates.md)** | Lint, build (incl. the pdfjs worker-patch check), what green means |
 | **[Verification Workflow](./verification.md)** | The manual/live checklist used for UI-facing changes |
 

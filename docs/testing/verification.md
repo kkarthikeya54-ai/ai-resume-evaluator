@@ -12,7 +12,7 @@ UI-facing changes are verified against the **running app**, not just compiled. T
    - **Student:** login → `/upload` → real PDF → "Upload Complete" → Analyze → readiness score + skills-gap + roadmap render.
    - **HR:** login → onboarding (role switch if needed) → `/hr` → session → preset → multi-PDF upload → Process & Rank → ranked table → open a candidate report → copilot answers.
 3. **Skeleton assertions** — trigger a fresh AI run and confirm skeleton cards/rows mount (count `.skeleton-shiver` / `.skeleton-base`), and that cached sections skip skeletons.
-4. **Interaction assertions** — cursor effects actually track (`--spot-x`/`--spot-y` respond to synthetic mousemove), Magnetic wraps the CTAs, stage meter flows then settles sage.
+4. **Interaction assertions** — cursor effects actually track (`--spot-x`/`--spot-y` respond to synthetic mousemove), Magnetic wraps the CTAs, stage meter flows then settles sky-blue.
 5. **Console sweep** — no errors beyond the two known externals: AI-proxy retries under load and (on legacy deployments only) the Cloud Functions CORS warning.
 6. **Accessibility spot-checks** — reduced-motion collapses animation; primary-button contrast ≥ 4.5:1; modals trap focus and restore it.
 7. **Real-file E2E** — actual PDF resumes through the genuine File API + pdfjs path (a 500-file synthetic set exists for stress runs; use 2–5 files).

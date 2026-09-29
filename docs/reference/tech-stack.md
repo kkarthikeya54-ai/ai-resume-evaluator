@@ -19,6 +19,7 @@
 | **@tanstack/react-virtual** | ^3.14 | Virtualized HR table | `components/hr/HrTable.jsx` |
 | **react-helmet-async** | ^3.0 | Per-page meta/SEO | `Seo.jsx` |
 | **sonner** | ^2.0 | Toasts | `App.jsx` + dashboards |
+| **@supabase/supabase-js** | ^2 | Optional cloud resume storage (Supabase `resumes` bucket) | `supabaseResumeStorage.js` |
 | **animejs** | ^4.5 | Landing micro-animations | `src/landing/ui/kit.jsx` |
 | **lucide-react** | ^1.34 | Icons | misc |
 
@@ -28,10 +29,10 @@
 | --- | --- |
 | **vite** ^8.1 | Build + dev server (rolldown) |
 | **@vitejs/plugin-react** ^6 | React fast refresh |
-| **vite-plugin-pwa** ^1.3 | Manifest + Workbox service worker |
 | **vitest** ^4.1 | Test runner |
 | **oxlint** ^1.71 | Linter |
 | **jszip** ^3.10 | Tooling/test utility |
+| **vite-plugin-pwa** ^1.3 | ⚠️ **Vestigial** — the PWA was removed; the dependency remains in `package.json` but no plugin is loaded in `vite.config.js` |
 | **@types/react**(-dom) | Editor intellisense |
 
 ## Scripts
@@ -40,16 +41,16 @@
 
 ## Build pipeline notes (`vite.config.js`)
 
-1. **Plugins:** `react()`, `tailwindcss()`, custom `pdfjsWorkerPolyfill()`, `VitePWA(...)`.
+1. **Plugins:** `react()`, `tailwindcss()`, custom `pdfjsWorkerPolyfill()`. (The old `VitePWA(...)` plugin is gone — see the dev-dependency table.)
 2. **`pdfjsWorkerPolyfill()`** — prepends ES2026 shims (`Map.prototype.getOrInsertComputed`/`getOrInsert`, `Uint8Array.prototype.toHex`/`fromHex`) to the pdf.js **worker**:
    - **Dev:** a middleware intercepts `pdf.worker(.min).mjs` requests and serves the real file with the patch prepended (worker assets bypass transforms — the middleware is the only reliable hook).
    - **Build:** `generateBundle` patches the emitted worker asset in `dist/`.
    - The main realm gets the same shims from `src/services/pdfjsCompat.js`.
-3. **PWA:** manifest (standalone, `#0A1F1C` theme), Workbox precache of `js/css/html/svg/woff2`, `navigateFallback: /index.html`, 5 MB per-file cap, auto cleanup.
+3. **No PWA:** no manifest, no Workbox, no service worker. `src/main.jsx` proactively **unregisters** any service worker left over from the earlier PWA setup (stale precaches caused "Failed to fetch dynamically imported module" after deploys).
 
 ## Fonts & meta (`index.html`)
 
-Inter Tight (Google Fonts) + Cabinet Grotesk (cdnfonts) for the landing; self-hosted Jakarta/Inter for the app; full OG/Twitter meta; `theme-color: #0A1F1C`; manifest link.
+Inter Tight (Google Fonts) + Cabinet Grotesk (cdnfonts) for the landing; self-hosted Jakarta/Inter for the app; full OG/Twitter meta; `theme-color: #F7FAFF`.
 
 ---
 

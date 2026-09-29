@@ -2,7 +2,7 @@
 
 > 🧪 Testing · Next: [Quality Gates](./quality-gates.md)
 
-Run with `npm test` (= `vitest run`). Colocated in `__tests__/` folders. **108 tests across 12 files, all green** (run ≈ 6 s).
+Run with `npm test` (= `vitest run`). Colocated in `__tests__/` folders. **111 tests across 12 files, all green** (run ≈ 1.5 s).
 
 ## The suites
 
@@ -19,14 +19,16 @@ Run with `npm test` (= `vitest run`). Colocated in `__tests__/` folders. **108 t
 | `src/services/__tests__/chatRankContext.test.js` | `extractRankReferences` ("10th", "top 3", ordinals), `selectChatContext` rank integration |
 | `src/services/__tests__/copilotActions.test.js` | Copilot shortlist actions: parse, rank resolution, application |
 | `src/components/hr/__tests__/KanbanBoard.test.js` | Kanban stage grouping logic |
-| `src/landing/utils/__tests__/scroll.test.js` | **19 tests** for the landing scroll store: knee re-measurement (clamp + no-showcase fallback), all 11 phase boundaries (bound±ε), story-fraction mapping, resize re-anchoring that preserves story position against pre-resize document height, poll sync, dispose, StrictMode double-init |
 | `src/utils/__tests__/authErrors.test.js` | Firebase auth error → human message mapping |
 
 ## Conventions
 
-- Plain `describe/it/expect`; fake timers where timing matters (scroll store).
-- Browser-global-dependent code (the scroll store) is driven through a stubbed `window`/`document` harness — no jsdom, keeping the node environment fast.
+- Plain `describe/it/expect`; fake timers where timing matters (polling, TTLs).
 - Tests target **pure logic**: services, utils, prompts. The seam is deliberate — every module's exports are functions, so harnessing is trivial.
+
+## What happened to `scroll.test.js`
+
+The landing scroll store (`src/landing/utils/scroll.js`) used to carry a 19-test suite (knee re-measurement, 11 phase boundaries, resize re-anchoring, poll sync); that test file was **removed** — the scroll store is now exercised only through the live verification workflow. The store itself is unchanged.
 
 ## Deliberately not unit-tested (and why)
 
