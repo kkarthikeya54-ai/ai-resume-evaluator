@@ -184,6 +184,15 @@ const paths = {
     </>
   ),
   flex: <path d="M4 6h16M4 12h16M4 18h16" />,
+  calendar: (
+    <>
+      <path d="M8 2v4" />
+      <path d="M16 2v4" />
+      <rect width="18" height="18" x="3" y="4" rx="2" />
+      <path d="M3 10h18" />
+    </>
+  ),
+  x: <path d="M18 6 6 18M6 6l12 12" />,
 };
 
 export default function Icon({ name, className = "h-4 w-4", ...rest }) {

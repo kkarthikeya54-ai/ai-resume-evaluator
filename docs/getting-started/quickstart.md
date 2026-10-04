@@ -36,7 +36,7 @@ Full details incl. server-side secrets: [Operations → Configuration](../operat
 | `dev` | `vite` | Dev server + HMR on :5173 |
 | `build` | `vite build` | Production bundle → `dist/` |
 | `lint` | `oxlint` | Lint everything (gate: 0 errors) |
-| `test` | `vitest run` | Unit tests (111) |
+| `test` | `vitest run` | Unit tests (127) |
 | `preview` | `vite preview` | Serve the built `dist/` locally |
 
 ## The dev loop used in this project

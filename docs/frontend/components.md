@@ -19,6 +19,7 @@
 | `VerifyGateModal.jsx` | Blocks AI runs for unverified accounts; "continue anyway" escape (product decision: encourages verification without hard-blocking) |
 | `CookieConsentBanner.jsx`, `LegalLayout.jsx` | Consent UI; shared legal-page layout |
 | `StudentResumePreviewModal.jsx` | 3D resume preview modal, focus-trapped |
+| `InterviewCalendar.jsx` | HR month grid of scheduled interview dates; each day chip opens that session (Sessions page) |
 
 ## AI result sections (student dashboard)
 
@@ -44,12 +45,13 @@ All follow the same contract — props `resumeText`, state via `useGemini()`, su
 | `HrConfigForm.jsx` | Job rules, keywords, role presets, dropzone, Process CTA (Magnetic + sheen sweep) |
 | `MultiFileDropzone.jsx` | Multi-file selection with `isSupportedFile` + `validateFileBytes` + size caps |
 | `HrProgress.jsx` | Stage meter (flowing primary-blue → sky when done) + skeleton rows |
-| `HrResults.jsx` | Results orchestrator: stats, filters, table, compare, copilot |
+| `HrResults.jsx` | Results orchestrator: stats, filters (incl. **Rejected**), pass-rate slider, table, compare, copilot |
+| `PassRateSlider.jsx` | 0–100% pass-rate slider (New Session modal + results header): scores below the rate move to Rejected; live "N of M would be rejected" count |
 | `HrTable.jsx` | **Virtualized** (@tanstack/react-virtual) ranked table — only visible rows render; sortable columns, shortlist star, per-row cursor spotlight |
 | `CompareModal.jsx` | Side-by-side of up to 3 candidates (TiltCard3D cards) |
 | `HrChatPanel.jsx` | Recruiter Copilot chat (see [AI Pipeline → Copilot](../ai-pipeline/copilot.md)) |
 | `Markdown.jsx` | Minimal markdown renderer for copilot answers |
-| `KanbanBoard.jsx` | Candidate stages as a board (knees/screened/shortlisted…) with drag-ish grouping |
+| `KanbanBoard.jsx` | Five-stage pipeline board (screened → shortlisted → interviewing → hired → **rejected**) — pointer drags between columns, stage arrows/dropdown, per-card *Auto-rejected · Restore* |
 | `CopilotAuditLog.jsx` | Verb-annotated history of copilot actions on candidates |
 | `JourneyTimeline.jsx` | Candidate-state changes rendered as a timeline |
 | `LeaderboardHero.jsx` | Top-candidate leaderboard card for the HR dashboard header |

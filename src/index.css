@@ -453,6 +453,54 @@ button:not(:disabled):active {
   }
 }
 
+/* ---------- HR pass-rate slider ---------- */
+.hr-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--theme-primary, #1D6FF2) 0%,
+    var(--theme-primary, #1D6FF2) var(--fill, 0%),
+    rgba(11, 31, 58, 0.12) var(--fill, 0%),
+    rgba(11, 31, 58, 0.12) 100%
+  );
+  outline: none;
+}
+
+.hr-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: var(--theme-card, #ffffff);
+  border: 2.5px solid var(--theme-primary, #1D6FF2);
+  box-shadow: 0 1px 4px rgba(11, 31, 58, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.hr-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.hr-range::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: var(--theme-card, #ffffff);
+  border: 2.5px solid var(--theme-primary, #1D6FF2);
+  box-shadow: 0 1px 4px rgba(11, 31, 58, 0.25);
+  cursor: pointer;
+}
+
+.hr-range:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ---------- shimmer button ---------- */
 .btn-shine {
   position: relative;

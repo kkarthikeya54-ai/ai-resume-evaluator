@@ -26,7 +26,7 @@ Full table with writers and rules: [Data & Privacy → Data Inventory](../data-a
 
 | Store | Contents |
 | --- | --- |
-| IndexedDB `airesume_sessions` (keyPath `id`) | Sessions: `{id, uid, role, name, createdAt, updatedAt, payload}` — HR payloads embed `fileData[].bytes` so previews survive reloads offline |
+| IndexedDB `airesume_sessions` (keyPath `id`) | Sessions: `{id, uid, role, name, createdAt, updatedAt, payload}` + optional HR metadata (`interviewDate`, `passRate`) — HR payloads embed `fileData[].bytes` so previews survive reloads offline |
 | IndexedDB `airesume_hr` (keyPath `uid`) | Legacy single-session store; migrated once by SessionsPage, then cleared |
 | IndexedDB `airesume_extract` | HR parsed-text cache (SHA-256 keys, 7-day TTL) |
 | `localStorage` | `airesume_role_<uid>`, `airesume_resume_text_<uid>`, `airesume_resume_metadata`, `airesume_cache_v1:<hash>` |

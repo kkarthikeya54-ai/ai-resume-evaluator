@@ -48,7 +48,7 @@ Rule of thumb: **services never import components**; pages/components import ser
 
 - **Best-effort persistence:** every localStorage/IndexedDB write is wrapped in try/catch — quota failures never crash the UI, they surface as status (`{ok:false, error:"quota"}`) or silent no-ops.
 - **Graceful unconfigured mode:** `config/firebase.js` exposes `isConfigured`; auth/storage functions either throw a helpful message or no-op with a warning so the app runs without cloud setup.
-- **Pure & testable:** the heavy logic (ranking, coverage, CSV, prompts, JSON repair) is exported as pure functions — that's what the 111 tests target (see [Testing](../testing/test-suites.md)).
+- **Pure & testable:** the heavy logic (ranking, coverage, CSV, prompts, JSON repair) is exported as pure functions — that's what the 127 tests target (see [Testing](../testing/test-suites.md)).
 - **Cancellation shape:** cooperative `{cancelled}` signal objects, not AbortControllers, for the HR pipeline (cheap, serializable across batch loops).
 - **Error messages are user-facing:** thrown `Error.message` strings are rendered directly in error boxes — they're written for users, not developers.
 

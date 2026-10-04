@@ -13,7 +13,7 @@
 | Role | Workspace | Gets |
 | --- | --- | --- |
 | 🎓 **Student** | `/upload` → `/app` | Placement-readiness score (0–100, 4-dimension breakdown), skill-gap analysis, missing-skills with free resources, resume improvements, recommended projects & certifications, 30/60/90-day roadmap, DSA plan, interview question bank |
-| 🏢 **HR / Recruiter** | `/hr` → `/candidate/:id` | Named hiring sessions, job rules + AI-expanded keywords, multi-resume batch upload, per-candidate AI evaluation with transparent 5-dimension scores, ranked pipeline, side-by-side compare, shortlisting, status tracking, CSV export, Markdown reports, and a grounded AI copilot chat |
+| 🏢 **HR / Recruiter** | `/hr` → `/candidate/:id` | Named hiring sessions, job rules + AI-expanded keywords, multi-resume batch upload, per-candidate AI evaluation with transparent 5-dimension scores, ranked pipeline, side-by-side compare, shortlisting, status tracking, a pass-rate slider that auto-rejects below-threshold candidates (restorable), an interview-date calendar, CSV export, Markdown reports, and a grounded AI copilot chat |
 
 Both roles share: a cinematic 3D landing page, onboarding tour, multi-session management, an account profile, and role switching.
 
@@ -34,7 +34,7 @@ Onboarding ("I'm hiring") → /hr → create a hiring session
   → enter job rules + keywords → AI expands keywords (originals + synonyms)
   → drop resumes (multi-file, validated) → Process & Rank
   → batches of 3, concurrency 6 → every candidate evaluated & ranked
-  → ranked table → candidate reports, compare modal, shortlists
+  → ranked table → pass-rate threshold → candidate reports, compare modal, shortlists
   → Recruiter Copilot answers questions grounded in the actual resumes
 ```
 

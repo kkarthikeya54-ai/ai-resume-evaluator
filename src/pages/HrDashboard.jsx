@@ -24,6 +24,7 @@ import {
   putSession,
 } from "../services/sessionStore";
 import { saveCandidates, clearCandidates } from "../services/hrStore";
+import { applyPassRate, clampPassRate, clearExemptions, scoreOf } from "../services/passRate";
 import { warmOcrPool } from "../services/ocr";
 import { sendVerificationEmail } from "../services/auth";
 import {
@@ -78,9 +79,19 @@ export default function HrDashboard() {
 
     const applySession = (record) => {
       if (cancelled) return;
-      setSessionMeta({ id: record.id, name: record.name });
+      setSessionMeta((m) => ({ ...m, id: record.id, name: record.name, passRate: record.passRate ?? null }));
       const payload = record.payload || {};
-      if (!payload.candidates?.length) return;
+      if (!payload.candidates?.length) {
+        // Keep the creation-time pass rate visible even before evaluation.
+        if (record.passRate != null) setSession({ ...payload, passRate: record.passRate });
+        return;
+      }
+      // Re-apply the stored pass rate so auto-rejections survive reloads.
+      const threshold = clampPassRate(payload.passRate ?? record.passRate ?? 0);
+      payload.passRate = threshold;
+      if (threshold > 0) {
+        payload.candidates = applyPassRate(payload.candidates, threshold).candidates;
+      }
       const urls = [];
       const fileData = payload.fileData || [];
       payload.candidates.forEach((candidate) => {
@@ -193,6 +204,9 @@ export default function HrDashboard() {
       uid: user.uid,
       role: ROLES.HR,
       name: sessionMeta.name,
+      // Mirror the pass rate at record level so the sessions list can show
+      // it too; the payload copy is the cross-device source of truth.
+      passRate: payload?.passRate ?? sessionMeta.passRate ?? null,
       payload,
     });
     if (saveResult && !saveResult.ok) {
@@ -218,11 +232,75 @@ export default function HrDashboard() {
     return true;
   };
 
+  // Pass-rate slider: immediately re-threshold the pipeline. Candidates
+  // below the rate move to Rejected (remembering their previous stage);
+  // lowering the threshold (or clearing it) restores the auto-rejected
+  // ones. Manual rejections are never touched. Moving the slider also
+  // lapses every manual rescue (passRateExempt) — changing the rate is an
+  // explicit re-run of the policy over the whole pool.
+  const handlePassRateChange = async (nextRate) => {
+    if (!session?.candidates) return;
+    const threshold = clampPassRate(nextRate);
+    const base =
+      threshold === clampPassRate(session.passRate ?? 0)
+        ? session.candidates
+        : clearExemptions(session.candidates);
+    const { candidates: nextCandidates } = applyPassRate(base, threshold);
+    const nextSession = { ...session, passRate: threshold, candidates: nextCandidates };
+    setSession(nextSession);
+    saveCandidates(nextCandidates);
+    await persistSessionPayload(nextSession);
+  };
+
+  // Restore one auto-rejected candidate to its pre-rejection stage.
+  const handleRestoreRejected = async (candidateId, stage) => {
+    if (!session?.candidates) return;
+    const nextCandidates = session.candidates.map((c) => {
+      if (c.id !== candidateId || c.status !== "rejected") return c;
+      const restored = { ...c, status: stage || c.rejectedFrom || "screened" };
+      delete restored.rejectedFrom;
+      // A hand-rescue sticks: if this candidate is still below the current
+      // rate, mark it exempt so the standing threshold can't re-reject it
+      // on the next load. Moving the slider lapses every such rescue.
+      if (scoreOf(restored) < clampPassRate(session.passRate ?? 0)) {
+        restored.passRateExempt = true;
+      }
+      return restored;
+    });
+    const nextSession = { ...session, candidates: nextCandidates };
+    setSession(nextSession);
+    saveCandidates(nextCandidates);
+    await persistSessionPayload(nextSession);
+
+    if (functionsEnabled() && sessionMeta.id) {
+      try {
+        await updateCandidateStatus(sessionMeta.id, candidateId, stage || "screened");
+      } catch (err) {
+        console.warn("[Backend] Candidate status sync failed:", err.message);
+      }
+    }
+  };
+
   const handleUpdateCandidateStatus = async (candidateId, status) => {
     if (!session?.candidates || !status) return;
-    const nextCandidates = session.candidates.map((c) =>
-      c.id === candidateId ? { ...c, status } : c
-    );
+    const nextCandidates = session.candidates.map((c) => {
+      if (c.id !== candidateId) return c;
+      const next = { ...c, status };
+      if (c.status === "rejected" && status !== "rejected") {
+        // Leaving Rejected: drop the auto-rejection marker (the move was a
+        // human decision) and — while the candidate is still below the
+        // current rate — mark the rescue exempt so the next load can't
+        // silently undo it.
+        delete next.rejectedFrom;
+        if (scoreOf(c) < clampPassRate(session.passRate ?? 0)) {
+          next.passRateExempt = true;
+        }
+      } else if (status === "rejected") {
+        // Entering Rejected by hand: a rescue marker makes no sense there.
+        delete next.passRateExempt;
+      }
+      return next;
+    });
     const nextSession = { ...session, candidates: nextCandidates };
     setSession(nextSession);
     saveCandidates(nextCandidates);
@@ -386,9 +464,27 @@ export default function HrDashboard() {
          immediately, storage work happens in the background. The save is
          still awaited on completion (but not blocking the UI), and storage
          failures surface via the persist helper's error banner. */
-      const nextSession = { ...result, config: { rules, keywords } };
+      // Apply the session's pass rate right away: new results are
+      // thresholded before the leaderboard is even shown.
+      const threshold = clampPassRate(sessionMeta.passRate ?? 0);
+      const nextSession = {
+        ...result,
+        config: { rules, keywords },
+        passRate: threshold,
+        candidates: threshold > 0 ? applyPassRate(result.candidates, threshold).candidates : result.candidates,
+      };
+      setSessionMeta((m) => ({ ...m, passRate: threshold }));
       setSession(nextSession);
-      saveCandidates(result.candidates);
+      saveCandidates(nextSession.candidates);
+      if (threshold > 0) {
+        const n = nextSession.candidates.filter((c) => c.status === "rejected").length;
+        if (n > 0) {
+          toast.info(
+            `${n} candidate${n === 1 ? "" : "s"} below the ${threshold}% pass rate were moved to Rejected.`,
+            { duration: 6000 }
+          );
+        }
+      }
 
       const fallbackCount = result.candidates.filter(
         (c) => c.evaluation?.usedFallback
@@ -607,14 +703,17 @@ export default function HrDashboard() {
 
         {session && !processing && (
           <>
-            <HrResults
-              session={session}
-              sessionId={sessionMeta.id}
-              onToggleShortlist={handleToggleShortlist}
-              onUpdateStatus={handleUpdateCandidateStatus}
-              onApplyShortlist={handleApplyShortlist}
-              onUndoShortlist={handleUndoShortlist}
-            />
+        <HrResults
+          session={session}
+          sessionId={sessionMeta.id}
+          onToggleShortlist={handleToggleShortlist}
+          onUpdateStatus={handleUpdateCandidateStatus}
+          onApplyShortlist={handleApplyShortlist}
+          onUndoShortlist={handleUndoShortlist}
+          onPassRateChange={handlePassRateChange}
+          onRestoreRejected={handleRestoreRejected}
+        />
+            {session.summary && (
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
                 <p className="text-xs text-[var(--theme-text-muted)] font-medium">
@@ -635,6 +734,7 @@ export default function HrDashboard() {
                 Clear Results
               </button>
             </div>
+            )}
           </>
         )}
         </>

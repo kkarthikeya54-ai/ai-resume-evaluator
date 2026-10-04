@@ -47,6 +47,7 @@ ai-resume-evaluation/
 │   │   ├── EmailVerificationBanner.jsx · VerifyGateModal.jsx
 │   │   ├── Skeleton.jsx        # Skeleton primitives (Card/Stack/Rows/Ribbon/Donut)
 │   │   ├── StudentResumePreviewModal.jsx
+│   │   ├── InterviewCalendar.jsx    # HR interview-date month grid (Sessions page)
 │   │   ├── ReadinessScore.jsx · SkillsGap.jsx · ResumeImprovements.jsx
 │   │   ├── RecommendedContent.jsx · Roadmap.jsx · DSARecommend.jsx
 │   │   ├── InterviewPrep.jsx · ResumeParser.jsx · ResumeAnalyzer.jsx
@@ -54,7 +55,8 @@ ai-resume-evaluation/
 │   │   ├── charts/             # DonutChart · RadarChart · SkillDistributionChart (SVG)
 │   │   ├── hr/                 # HrConfigForm · MultiFileDropzone · HrProgress · HrResults
 │   │   │                       # HrTable (virtualized) · CompareModal · HrChatPanel · Markdown
-│   │   │                       # KanbanBoard · CopilotAuditLog · JourneyTimeline · LeaderboardHero
+│   │   │                       # KanbanBoard · PassRateSlider · CopilotAuditLog · JourneyTimeline
+│   │   │                       # LeaderboardHero
 │   │   ├── upload/             # FileDropzone · UploadProgress · FileInfoCard · SuccessAnimation
 │   │   ├── ui/                 # Button · Magnetic · TiltCard3D · SpotlightCard · CountUp
 │   │   │                       # Reveal · Marquee · TextScramble · BorderBeam · ScoreGauge3D
@@ -65,13 +67,13 @@ ai-resume-evaluation/
 │   │   ├── auth.js · role.js · authErrors→(utils) · fileParser.js · pdfjsCompat.js · ocr.js
 │   │   ├── ocrWorkerPool.js · extractCache.js · localScoring.js
 │   │   ├── gemini.js · hrScoring.js · hrChat.js · hrBackend.js
-│   │   ├── sessionStore.js · hrStore.js · localResumeStorage.js
+│   │   ├── passRate.js · sessionStore.js · hrStore.js · localResumeStorage.js
 │   │   ├── supabaseResumeStorage.js · resumeStorage.js (facade) · userProfile.js
 │   │   ├── cloudResumeStorage.js (⚠️ dead code — legacy Firebase, unimported)
 │   │   ├── dataWipe.js · storageUtils.js
 │   │   └── __tests__/          # fileParser · gemini · hrScoring · hrChat · hrStore · storageUtils
 │   │                           # localScoring · perfPipeline · chatRankContext · copilotActions
-│   │                           # authErrors · KanbanBoard
+│   │                           # authErrors · KanbanBoard · passRate
 │   ├── hooks/                  # useGemini · useCountUp · useInView · useFocusTrap · useAnalysisRunState
 │   ├── utils/                  # analysisEvents (event bus) · authErrors (error map)
 │   ├── data/sampleSession.js   # Pre-built HR demo session
@@ -93,7 +95,7 @@ ai-resume-evaluation/
     ├── wrangler.toml · wrangler.hr-api.toml · deploy.js · README.md
 ```
 
-**Counts:** ~145 source files under `src/` · 12 test files (111 tests) · 1 legacy Cloud Functions module (5 endpoints) · 2 Cloudflare Workers (AI proxy + HR API).
+**Counts:** ~151 js/jsx files under `src/` · 13 test files (127 tests) · 1 legacy Cloud Functions module (5 endpoints) · 2 Cloudflare Workers (AI proxy + HR API).
 
 ---
 

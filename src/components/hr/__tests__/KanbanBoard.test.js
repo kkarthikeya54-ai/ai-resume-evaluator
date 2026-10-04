@@ -2,8 +2,14 @@ import { describe, it, expect } from "vitest";
 import { STAGES, colIdFor } from "../KanbanBoard";
 
 describe("kanban stage grouping", () => {
-  it("exposes the four pipeline stages in order", () => {
-    expect(STAGES.map((s) => s.id)).toEqual(["screened", "shortlisted", "interviewing", "hired"]);
+  it("exposes the five pipeline stages in order, rejected last", () => {
+    expect(STAGES.map((s) => s.id)).toEqual([
+      "screened",
+      "shortlisted",
+      "interviewing",
+      "hired",
+      "rejected",
+    ]);
   });
 
   it("maps every known status to its stage id", () => {
@@ -11,6 +17,7 @@ describe("kanban stage grouping", () => {
     expect(colIdFor({ status: "shortlisted" })).toBe("shortlisted");
     expect(colIdFor({ status: "interviewing" })).toBe("interviewing");
     expect(colIdFor({ status: "hired" })).toBe("hired");
+    expect(colIdFor({ status: "rejected" })).toBe("rejected");
   });
 
   it("falls back to the first stage for missing or unknown status", () => {

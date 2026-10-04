@@ -8,9 +8,13 @@ import {
   renameSession,
   deleteSession,
   putSession,
+  updateSessionMeta,
 } from "../services/sessionStore";
 import { loadSession, clearSession } from "../services/hrStore";
 import DashboardHeader from "../components/DashboardHeader";
+import InterviewCalendar from "../components/InterviewCalendar";
+import PassRateSlider from "../components/hr/PassRateSlider";
+import Icon from "../components/ui/Icon";
 
 function formatDate(iso) {
   if (!iso) return "—";
@@ -25,6 +29,13 @@ function formatDate(iso) {
   } catch {
     return "—";
   }
+}
+
+function interviewDayLabel(iso) {
+  if (!iso) return null;
+  const d = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
 function sessionSummary(session, role) {
@@ -52,6 +63,10 @@ export default function SessionsPage() {
   const [newName, setNewName] = useState("");
   const [renamingId, setRenamingId] = useState(null);
   const [renameValue, setRenameValue] = useState("");
+  const [newInterviewDate, setNewInterviewDate] = useState("");
+  const [newPassRate, setNewPassRate] = useState(0);
+  const [dateEditingId, setDateEditingId] = useState(null);
+  const [dateEditValue, setDateEditValue] = useState("");
 
   const refresh = useCallback(async () => {
     if (!user?.uid || !role) return;
@@ -83,9 +98,14 @@ export default function SessionsPage() {
 
   const handleCreate = async () => {
     if (!user?.uid || !role || !newName.trim()) return;
-    const record = await createSession(user.uid, role, newName);
+    const record = await createSession(user.uid, role, newName, {
+      interviewDate: isHr ? newInterviewDate : "",
+      passRate: isHr ? newPassRate : null,
+    });
     setCreating(false);
     setNewName("");
+    setNewInterviewDate("");
+    setNewPassRate(0);
     if (!record) return;
     navigate(role === ROLES.HR ? `/hr?session=${record.id}` : `/app?session=${record.id}`);
   };
@@ -107,6 +127,12 @@ export default function SessionsPage() {
   const handleDelete = async (session) => {
     if (!window.confirm(`Delete session "${session.name}"? This cannot be undone.`)) return;
     await deleteSession(session.id);
+    refresh();
+  };
+
+  const handleSaveDate = async (session) => {
+    await updateSessionMeta(session.id, { interviewDate: dateEditValue });
+    setDateEditingId(null);
     refresh();
   };
 
@@ -181,6 +207,17 @@ export default function SessionsPage() {
                   </div>
 
                   <p className="mt-2 text-sm text-[var(--theme-text-muted,#475569)] font-medium">{sessionSummary(session, role)}</p>
+                  {isHr && session.interviewDate && interviewDayLabel(session.interviewDate) && (
+                    <p className="mt-2 inline-flex items-center gap-1.5 rounded-xl border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-bold text-primary-700">
+                      <Icon name="calendar" className="h-3.5 w-3.5" />
+                      Interview: {interviewDayLabel(session.interviewDate)}
+                    </p>
+                  )}
+                  {isHr && session.passRate > 0 && (
+                    <p className="mt-2 text-xs font-bold text-[var(--theme-text-muted,#475569)]">
+                      Pass rate: <span className="text-primary-600">{session.passRate}%</span>
+                    </p>
+                  )}
                   {isHr && rulesPreview(session.payload) && (
                     <p className="mt-2 rounded-xl border border-[var(--theme-border,#e2e8f0)] bg-[var(--theme-bg)]/85 px-3 py-2 text-xs text-[var(--theme-text-muted,#475569)]">
                       <span className="font-bold text-[var(--theme-text,#0f172a)]">Job rules: </span>
@@ -190,6 +227,31 @@ export default function SessionsPage() {
                   <p className="mt-2 text-xs text-[var(--theme-text-muted,#475569)] font-medium">Updated {formatDate(session.updatedAt)}</p>
                 </div>
 
+                {dateEditingId === session.id && (
+                  <div className="mt-3 flex items-center gap-2 rounded-xl border border-primary-200 bg-primary-50 p-2">
+                    <input
+                      type="date"
+                      autoFocus
+                      value={dateEditValue}
+                      onChange={(e) => setDateEditValue(e.target.value)}
+                      className="min-w-0 flex-1 rounded-lg border border-[var(--theme-border,#e2e8f0)] bg-[var(--theme-card,#ffffff)] px-2.5 py-1.5 text-xs font-semibold text-[var(--theme-text,#0f172a)] focus:outline-none focus:border-primary-500"
+                      aria-label="Interview date"
+                    />
+                    <button
+                      onClick={() => handleSaveDate(session)}
+                      className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-primary-700 transition-all cursor-pointer"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setDateEditingId(null)}
+                      className="rounded-lg px-2 py-1.5 text-xs font-bold text-[var(--theme-text-muted,#475569)] hover:text-[var(--theme-text,#0f172a)] transition-all cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+
                 <div className="mt-5 flex items-center gap-2 pt-2 border-t border-[var(--theme-border,#e2e8f0)]">
                   <button
                     onClick={() => handleOpen(session)}
@@ -197,6 +259,19 @@ export default function SessionsPage() {
                   >
                     Open
                   </button>
+                  {isHr && (
+                    <button
+                      onClick={() => {
+                        setDateEditingId(session.id);
+                        setDateEditValue(session.interviewDate || "");
+                      }}
+                      title={session.interviewDate ? "Change interview date" : "Set interview date"}
+                      aria-label="Set interview date"
+                      className="rounded-xl border border-[var(--theme-border,#e2e8f0)] bg-[var(--theme-card,#ffffff)] px-3 py-2 text-[var(--theme-text,#0f172a)] hover:bg-[var(--theme-bg)]/85 shadow-2xs transition-all cursor-pointer"
+                    >
+                      <Icon name="calendar" className="h-4 w-4" />
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       setRenamingId(session.id);
@@ -216,6 +291,10 @@ export default function SessionsPage() {
               </div>
             ))}
           </div>
+        )}
+
+        {isHr && (
+          <InterviewCalendar sessions={sessions} onOpenSession={handleOpen} />
         )}
       </main>
 
@@ -237,6 +316,31 @@ export default function SessionsPage() {
               placeholder="Session name"
               className="mt-4 w-full rounded-xl border border-[var(--theme-border,#e2e8f0)] bg-[var(--theme-bg)]/85 px-4 py-2.5 text-sm text-[var(--theme-text,#0f172a)] placeholder:text-[var(--theme-text-muted,#64748b)] focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 shadow-xs"
             />
+            {isHr && (
+              <>
+                <div className="mt-4">
+                  <label htmlFor="new-interview-date" className="mb-1.5 block text-sm font-bold text-[var(--theme-text,#0f172a)]">
+                    Interview date <span className="text-xs font-normal text-[var(--theme-text-muted,#475569)]">(shown on the calendar)</span>
+                  </label>
+                  <input
+                    id="new-interview-date"
+                    type="date"
+                    value={newInterviewDate}
+                    onChange={(e) => setNewInterviewDate(e.target.value)}
+                    className="w-full rounded-xl border border-[var(--theme-border,#e2e8f0)] bg-[var(--theme-bg)]/85 px-4 py-2.5 text-sm text-[var(--theme-text,#0f172a)] focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 shadow-xs"
+                  />
+                </div>
+                <div className="mt-4">
+                  <PassRateSlider
+                    value={newPassRate}
+                    onChange={setNewPassRate}
+                    candidateCount={null}
+                    belowCount={null}
+                    hint="Resumes scoring below this are rejected automatically once candidates are evaluated."
+                  />
+                </div>
+              </>
+            )}
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setCreating(false)}

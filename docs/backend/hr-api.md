@@ -27,7 +27,7 @@ hr:session:<uid>:<sessionId>     → single session record
 
 - Every KV write carries `expirationTtl` = **1 year of inactivity** (each upsert refreshes it).
 - KV's value cap is 25 MiB. `MAX_BODY_BYTES = 24 MiB` is **defined** in the worker but not currently enforced; instead the *client* strips raw file bytes before mirroring (`slimPayloadForCloud` drops `fileData[].bytes` and blob `url`), so sessions stay small (metadata + scores only) and the 25 MiB cap is never approached.
-- `payload.candidates[].status` values are normalized to the allowed set (`screened`, `shortlisted`, `interviewing`, `hired`) on write — same validation the functions did.
+- `payload.candidates[].status` values are normalized to the allowed set (`screened`, `shortlisted`, `interviewing`, `hired`, `rejected`) on write — same validation the functions did, extended with `rejected` for the pass-rate column. `PATCH` validates against the same set and answers `400` (listing it) for anything else.
 
 ## Auth
 
@@ -41,6 +41,8 @@ POST https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=<WEB_API_KEY>
 A valid token returns the user record (including `localId` = uid); anything else is a `401`. Every route below the auth check derives all KV keys from that uid — there is no way to address another user's data. (Trade-off vs `verifyIdToken`: one extra upstream round trip per request, but zero admin credentials to manage.)
 
 Configuration: `FIREBASE_PROJECT_ID` and `ALLOWED_ORIGINS` are plaintext `[vars]` in `worker/wrangler.hr-api.toml`; `FIREBASE_WEB_API_KEY` is a **secret** (`wrangler secret put FIREBASE_WEB_API_KEY`).
+
+**Behavioral tests:** `node scripts/_hr_worker_test.mjs` drives the real `fetch()` with an in-memory KV stub and a stubbed token check — 4 tests covering the `rejected` allow-list regression (saves no longer reset rejected candidates to `screened`, drags no longer 400) plus the unknown-status guards.
 
 ## Endpoints
 

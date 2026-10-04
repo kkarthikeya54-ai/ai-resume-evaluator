@@ -33,6 +33,8 @@ Stages: `idle → uploading → ready → analyzing` (+ error).
 ## HrDashboard — `/hr`
 The orchestrator. Owns: session load/create (redirects to the most recent session), config state (rules/keywords/files), `runHrAnalysis` execution with progress + cancel, the email-verification gate for unverified accounts (with "continue anyway"), persistence (IndexedDB + optional cloud sync), storage-quota warnings, and sample-session loading (`data/sampleSession.js`).
 
+**Pass-rate auto-rejection:** the results header carries a 0–100% `PassRateSlider` (also mirrored at record level so `/sessions` can show it). Scores below the rate move to the **Rejected** stage via `services/passRate.js`, remembering their previous stage in `rejectedFrom`; lowering or clearing the rate restores them, and a hand-rescue (the card's *Restore* button, or dragging a candidate out of Rejected) marks it `passRateExempt` so a reload can't silently undo it — the marker lapses the next time the slider moves. The stored rate is re-applied whenever the session loads, so auto-rejections survive reloads and travel across devices.
+
 **Multi-device recovery:** opening `/hr?session=<id>` for a session that isn't in this device's IndexedDB pulls the full record from the HR API Worker (`fetchHrSession`), caches it locally (`putSession`), and proceeds — so a hiring session started on one device opens on another. If neither local store nor the cloud has the record, it redirects to `/sessions`.
 
 ## CandidateView — `/candidate/:id`
@@ -40,6 +42,8 @@ Full candidate report: 3D tilt header with score gauge, tabbed sections (overvie
 
 ## SessionsPage — `/sessions`
 Create/rename/delete sessions for the current role; one-time migration of the legacy HR single-session store; storage-friendly summaries (candidate count / resume loaded / rules preview).
+
+HR sessions also pick up an **interview date** and a starting **pass rate** in the New Session modal (the date stays editable later via the calendar button on each card). Dated sessions show an *Interview:* chip, are plotted as clickable day chips on `InterviewCalendar`, and show *Pass rate: N%* on the card when the rate is above 0.
 
 ## Account — `/account`
 Profile editing (basic info; academic details for students; HR company details), usage stats (evaluations, top score, tier), email-verification resend, role switch (confirm modal → data wipe), sign out.

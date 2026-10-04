@@ -8,7 +8,9 @@ import TiltCard3D from "../ui/TiltCard3D";
 import CountUp from "../ui/CountUp";
 import KanbanBoard from "./KanbanBoard";
 import LeaderboardHero from "./LeaderboardHero";
+import PassRateSlider from "./PassRateSlider";
 import { generateCandidatesCsv } from "../../services/hrScoring";
+import { countBelow } from "../../services/passRate";
 
 /* Ring tone per metric value — mirrors the table's score coloring. */
 function ringTone(value) {
@@ -143,16 +145,50 @@ function ViewSwitch({ viewMode, setViewMode }) {
   );
 }
 
-export default function HrResults({ session, sessionId, onToggleShortlist, onUpdateStatus, onApplyShortlist, onUndoShortlist }) {
+export default function HrResults({
+  session,
+  sessionId,
+  onToggleShortlist,
+  onUpdateStatus,
+  onApplyShortlist,
+  onUndoShortlist,
+  onPassRateChange,
+  onRestoreRejected,
+}) {
   const [viewMode, setViewMode] = useState("table"); // "table" | "kanban"
-  const [filterMode, setFilterMode] = useState("all"); // "all" | "top" | "shortlist"
+  const [filterMode, setFilterMode] = useState("all"); // "all" | "top" | "shortlist" | "rejected"
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState(() => new Set());
   const [compareOpen, setCompareOpen] = useState(false);
 
-  if (!session?.candidates?.length) return null;
+  const candidates = session?.candidates || [];
+  const passRate = session?.passRate ?? 0;
+  const passRateMeta = useMemo(
+    () => ({
+      total: candidates.length,
+      below: countBelow(candidates, passRate),
+    }),
+    [candidates, passRate]
+  );
 
-  const candidates = session.candidates;
+  const filteredCandidates = useMemo(() => {
+    return candidates.filter((c) => {
+      const overall = c.scores?.total ?? c.scores?.overall ?? 0;
+      const matchesSearch =
+        !searchQuery.trim() ||
+        (c.evaluation?.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.fileName || "").toLowerCase().includes(searchQuery.toLowerCase());
+
+      if (!matchesSearch) return false;
+      if (filterMode === "shortlist") return c.shortlisted;
+      if (filterMode === "top") return overall >= 80;
+      if (filterMode === "rejected") return c.status === "rejected";
+      return true;
+    });
+  }, [candidates, filterMode, searchQuery]);
+
+  if (!candidates.length) return null;
+
   const avg =
     candidates.length > 0
       ? Math.round(
@@ -168,21 +204,7 @@ export default function HrResults({ session, sessionId, onToggleShortlist, onUpd
   const failed = session.summary?.failed || 0;
   const shortlistedCount = candidates.filter((c) => c.shortlisted).length;
   const topTierCount = candidates.filter((c) => (c.scores?.total ?? c.scores?.overall ?? 0) >= 80).length;
-
-  const filteredCandidates = useMemo(() => {
-    return candidates.filter((c) => {
-      const overall = c.scores?.total ?? c.scores?.overall ?? 0;
-      const matchesSearch =
-        !searchQuery.trim() ||
-        (c.evaluation?.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (c.fileName || "").toLowerCase().includes(searchQuery.toLowerCase());
-
-      if (!matchesSearch) return false;
-      if (filterMode === "shortlist") return c.shortlisted;
-      if (filterMode === "top") return overall >= 80;
-      return true;
-    });
-  }, [candidates, filterMode, searchQuery]);
+  const rejectedCount = candidates.filter((c) => c.status === "rejected").length;
 
   const compareCandidates = candidates.filter((c) => selectedIds.has(c.id));
 
@@ -214,6 +236,7 @@ export default function HrResults({ session, sessionId, onToggleShortlist, onUpd
     { id: "all", label: `All (${candidates.length})`, icon: null, activeClass: "from-primary-600 to-primary-500 text-white shadow-md shadow-primary-600/20" },
     { id: "top", label: `Top Matches (${topTierCount})`, icon: "star", activeClass: "from-primary-600 to-primary-500 text-white shadow-md shadow-primary-600/20" },
     { id: "shortlist", label: `Shortlisted (${shortlistedCount})`, icon: "crown", activeClass: "from-shortlist-500 to-shortlist-600 text-white shadow-md shadow-shortlist-500/25" },
+    { id: "rejected", label: `Rejected (${rejectedCount})`, icon: "x", activeClass: "from-red-600 to-red-500 text-white shadow-md shadow-red-600/25" },
   ];
 
   return (
@@ -261,6 +284,17 @@ export default function HrResults({ session, sessionId, onToggleShortlist, onUpd
           subtext={failed === 0 ? "100% successful" : "Format warnings"}
         />
       </div>
+
+      {/* ── Pass-rate control ─────────────────────────────── */}
+      {onPassRateChange && (
+        <PassRateSlider
+          value={passRate}
+          onChange={onPassRateChange}
+          candidateCount={passRateMeta.total}
+          belowCount={passRateMeta.below}
+          hint="Candidates scoring below the pass rate move to Rejected — lower the rate (or set 0) to bring them back."
+        />
+      )}
 
       {/* ── Leaderboard hero (top-3) ───────────────────────── */}
       {candidates.length >= 3 && (
@@ -351,6 +385,8 @@ export default function HrResults({ session, sessionId, onToggleShortlist, onUpd
           sessionId={sessionId}
           onToggleShortlist={onToggleShortlist}
           onUpdateStatus={onUpdateStatus}
+          onRestoreRejected={onRestoreRejected}
+          passRate={passRate}
         />
       )}
 

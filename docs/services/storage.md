@@ -6,20 +6,23 @@ The persistence layer spans IndexedDB (`sessionStore`, `hrStore`, `extractCache`
 
 ## `sessionStore.js` — IndexedDB `airesume_sessions` (v1)
 
-One object store keyed by session `id`. Records: `{id, uid, role, name, createdAt, updatedAt, payload}`.
+One object store keyed by session `id`. Records: `{id, uid, role, name, createdAt, updatedAt, payload}` plus optional HR metadata — `interviewDate?` (ISO `YYYY-MM-DD`) and `passRate?` (0–100).
 
 | Export | Notes |
 | --- | --- |
-| `createSession(uid, role, name)` | Generates `ses_<ts>_<rand>` id, stamps timestamps |
-| `listSessions(uid, role)` | Filters owner+role, sorted by `updatedAt` desc |
+| `createSession(uid, role, name, extras?)` | Generates `ses_<ts>_<rand>` id, stamps timestamps; `extras` may carry HR `{interviewDate, passRate}` (rate clamped to 0–100) |
+| `listSessions(uid, role)` | Filters owner+role, sorted by `updatedAt` desc; surfaces `interviewDate` + `passRate` for the HR cards/calendar |
 | `getSession(id)` | `null` on any failure (callers re-verify `record.uid === user.uid`) |
-| `putSession(record)` | Stamps `updatedAt`; **quota-aware**: returns `{ok:true,…}` or `{ok:false, error:"quota"\|message}` by sniffing the IndexedDB error |
+| `putSession(record)` | **Merges over the stored record** (so partial writes from the dashboard can't drop `interviewDate`/`createdAt`; clear a field with an explicit `null`), stamps `updatedAt`; **quota-aware**: returns `{ok:true,…}` or `{ok:false, error:"quota"\|message}` by sniffing the IndexedDB error |
+| `updateSessionMeta(id, {name, interviewDate, passRate})` | Metadata-only update — never touches `payload`; pass `""`/`null` to clear a field |
 | `renameSession`, `deleteSession`, `deleteSessionsForUser` | Self-explanatory; all best-effort |
 | `getStorageInfo()` | `navigator.storage.estimate()` → `{usage, quota}` (drives the HR usage meter) |
 | `estimatePayloadBytes(payload)` | JSON size (excluding `bytes`) + file bytes + resume text |
 | `formatBytes`, `createSessionId` | Helpers |
 
 HR payloads embed `fileData[].bytes` (ArrayBuffers) so resume previews survive reloads **offline** — the reason sessions can get large (hence the quota plumbing).
+
+Metadata split: the **pass rate** is mirrored inside `payload.passRate`, so it travels with the cloud copy and re-applies on any device; the **interview date** lives at record level only (IndexedDB), i.e. it is per-device.
 
 ## `hrStore.js` — legacy store + candidate cache
 

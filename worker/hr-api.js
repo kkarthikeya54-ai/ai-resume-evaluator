@@ -38,7 +38,7 @@ const CORS_HEADERS = {
 
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 365; // 1 year of inactivity
 const MAX_BODY_BYTES = 24 * 1024 * 1024; // KV cap is 25 MiB; leave headroom
-const ALLOWED_STATUSES = new Set(["screened", "shortlisted", "interviewing", "hired"]);
+const ALLOWED_STATUSES = new Set(["screened", "shortlisted", "interviewing", "hired", "rejected"]);
 const DEFAULT_STATUS = "screened";
 
 function corsHeaders(request, env, extra = {}) {

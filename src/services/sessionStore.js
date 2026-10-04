@@ -1,3 +1,5 @@
+import { clampPassRate } from "./passRate";
+
 const DB_NAME = "airesume_sessions";
 const STORE_NAME = "sessions";
 const VERSION = 1;
@@ -90,6 +92,8 @@ export async function listSessions(uid, role) {
         name: record.name || "Untitled Session",
         createdAt: record.createdAt,
         updatedAt: record.updatedAt,
+        interviewDate: record.interviewDate || null,
+        passRate: record.passRate != null ? clampPassRate(record.passRate) : null,
         payload: record.payload || {},
       }))
       .sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
@@ -108,7 +112,7 @@ export async function getSession(id) {
   }
 }
 
-export async function createSession(uid, role, name) {
+export async function createSession(uid, role, name, extras = {}) {
   if (!uid) return null;
   const now = new Date().toISOString();
   const record = {
@@ -120,14 +124,46 @@ export async function createSession(uid, role, name) {
     updatedAt: now,
     payload: {},
   };
+  // Optional HR session metadata chosen at creation time: the scheduled
+  // interview date (shown on the sessions-page calendar) and the starting
+  // pass-rate threshold. Anything else in `extras` is ignored.
+  if (extras.interviewDate) record.interviewDate = extras.interviewDate;
+  if (extras.passRate != null) record.passRate = clampPassRate(extras.passRate);
   await putSession(record);
   return record;
+}
+
+/** Persist HR session metadata (name, interview date, pass rate) without
+ *  touching the evaluation payload. Returns the updated record or null.
+ *  Clearing a field passes `null` (putSession merges over the stored
+ *  record, so an omitted key would keep the old value). */
+export async function updateSessionMeta(id, { name, interviewDate, passRate } = {}) {
+  const record = await getSession(id);
+  if (!record) return null;
+  const next = { ...record };
+  if (name !== undefined) next.name = (name || "").trim() || record.name;
+  if (interviewDate !== undefined) next.interviewDate = interviewDate || null;
+  if (passRate !== undefined) {
+    next.passRate = passRate != null ? clampPassRate(passRate) : null;
+  }
+  return putSession(next);
 }
 
 export async function putSession(record) {
   if (!record?.id || !record?.uid) return null;
   const now = new Date().toISOString();
-  const next = { ...record, updatedAt: now };
+  // Merge over the stored record instead of replacing it: most callers
+  // (results footer, sample loader, cloud import) write partial records
+  // {id, uid, role, name, payload}, and replacing would silently drop the
+  // record-level metadata this store now carries (interviewDate, passRate,
+  // createdAt). Callers clear a field by writing an explicit null.
+  let base = null;
+  try {
+    base = await transaction("readonly", (store) => store.get(record.id));
+  } catch {
+    base = null;
+  }
+  const next = { ...base, ...record, updatedAt: now };
   try {
     await transaction("readwrite", (store) => store.put(next));
     return { ok: true, record: next };

@@ -47,12 +47,19 @@ export const STAGES = [
     title: "Hired",
     accent: "bg-emerald-500/15 text-emerald-700",
   },
+  {
+    id: "rejected",
+    icon: "x",
+    title: "Rejected",
+    accent: "bg-red-500/15 text-red-700",
+  },
 ];
 
 // Landing-grade spring: quick pickup, soft settle.
 const SPRING = { type: "spring", stiffness: 520, damping: 40, mass: 0.9 };
 
 // Candidates without an explicit status live in the first stage.
+// "rejected" IS a valid column now — unknown statuses still fall back.
 export const colIdFor = (c) =>
   c.status && STAGES.some((s) => s.id === c.status) ? c.status : "screened";
 
@@ -80,6 +87,7 @@ function KanbanCard({
   onDragEnd,
   onToggleShortlist,
   onUpdateStatus,
+  onRestore,
   sessionId,
 }) {
   const controls = useDragControls();
@@ -90,6 +98,8 @@ function KanbanCard({
   const canRetreat = stageIdx > 0;
   const name = c.evaluation?.name || c.fileName;
   const draggable = Boolean(onUpdateStatus);
+  const isAutoRejected = c.status === "rejected" && typeof c.rejectedFrom === "string";
+  const restoreStage = STAGES.some((s) => s.id === c.rejectedFrom) ? c.rejectedFrom : "screened";
 
   return (
     <motion.div
@@ -182,23 +192,34 @@ function KanbanCard({
         )}
 
         <div className="flex items-center justify-between border-t border-[var(--theme-border)] pt-2 text-xs">
-          <button
-            type="button"
-            onClick={() => onToggleShortlist(c.id)}
-            className={`cursor-pointer rounded-lg px-2.5 py-1 font-extrabold transition-all ${
-              c.shortlisted
-                ? "bg-emerald-600 text-white"
-                : "border border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:bg-[#0B1F3A]/[0.06]"
-            }`}
-          >
-            {c.shortlisted ? (
-              <span className="inline-flex items-center gap-1">
-                <Icon name="star" className="h-3 w-3" /> Shortlisted
-              </span>
-            ) : (
-              "+ Shortlist"
-            )}
-          </button>
+          {isAutoRejected && onRestore ? (
+            <button
+              type="button"
+              onClick={() => onRestore(c.id, restoreStage)}
+              title={`Score ${score}% was below the pass rate — restore moves it back to ${restoreStage} and keeps it there until the pass rate changes`}
+              className="cursor-pointer rounded-lg border border-red-500/30 bg-red-500/10 px-2.5 py-1 font-extrabold text-red-700 transition-all hover:bg-red-500/20"
+            >
+              Auto-rejected · Restore
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onToggleShortlist(c.id)}
+              className={`cursor-pointer rounded-lg px-2.5 py-1 font-extrabold transition-all ${
+                c.shortlisted
+                  ? "bg-emerald-600 text-white"
+                  : "border border-[var(--theme-border)] text-[var(--theme-text-muted)] hover:bg-[#0B1F3A]/[0.06]"
+              }`}
+            >
+              {c.shortlisted ? (
+                <span className="inline-flex items-center gap-1">
+                  <Icon name="star" className="h-3 w-3" /> Shortlisted
+                </span>
+              ) : (
+                "+ Shortlist"
+              )}
+            </button>
+          )}
 
           {sessionId && (
             <Link to={`/candidate/${c.id}?session=${sessionId}`} className="font-bold text-primary-700 hover:underline">
@@ -216,6 +237,8 @@ export default function KanbanBoard({
   sessionId,
   onToggleShortlist,
   onUpdateStatus,
+  onRestoreRejected,
+  passRate = 0,
 }) {
   const reduced = useReducedMotion() ?? false;
   const [dragId, setDragId] = useState(null);
@@ -296,10 +319,11 @@ export default function KanbanBoard({
         <p className="flex items-center gap-2 text-[12px] font-medium text-[var(--theme-text-muted)]">
           <GripDots className="h-3 w-2 opacity-70" />
           Drag candidates between stages — a drop outside a stage springs back.
+          {passRate > 0 && " Candidates below the pass rate land in Rejected."}
         </p>
       )}
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4" data-kanban-board>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-5" data-kanban-board>
         {columns.map((col) => (
           <div
             key={col.id}
@@ -347,6 +371,7 @@ export default function KanbanBoard({
                     onDragEnd={handleDragEnd}
                     onToggleShortlist={onToggleShortlist}
                     onUpdateStatus={onUpdateStatus}
+                    onRestore={onRestoreRejected}
                     sessionId={sessionId}
                   />
                 ))

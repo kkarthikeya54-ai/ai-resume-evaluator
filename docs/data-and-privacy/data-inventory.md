@@ -10,7 +10,7 @@
 | Resume **file** (optional cloud path) | Supabase Storage `resumes/{uid}/…` (public bucket) | `services/supabaseResumeStorage.js` | Yes (only when `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` are configured) |
 | Resume **text** (student) | `localStorage: airesume_resume_text_<uid>` | `saveResumeText` | **No** — except as AI prompt (see [Privacy & Deletion](./privacy-and-deletion.md)) |
 | User profile + usage stats | Firestore `users/{uid}` | `services/userProfile.js` | Yes (owner-only rules) |
-| HR sessions (rules, keywords, candidates, **resume bytes**) | IndexedDB `airesume_sessions` | `services/sessionStore.js` | **No** (optional best-effort cloud mirror) |
+| HR sessions (rules, keywords, candidates, **resume bytes**, interview date, pass rate) | IndexedDB `airesume_sessions` | `services/sessionStore.js` | **No** (optional best-effort cloud mirror) |
 | HR parsed-text cache | IndexedDB `airesume_extract` (SHA-256 keys, 7-day TTL) | `services/extractCache.js` | No |
 | HR cloud mirror | Cloudflare Workers KV `hr:session:<uid>:<id>` via the HR API Worker | `services/hrBackend.js` | Yes (ID token verified server-side; every KV key is uid-scoped; file bytes stripped before mirroring) |
 | Candidate cache (current tab) | `sessionStorage: airesume_hr_candidates` | `services/hrStore.js` | No |
